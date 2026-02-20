@@ -1,0 +1,36 @@
+# Checklist（今天）
+
+> 日期基准：2026-02-20（今天）
+
+## 1. 今日主线任务（按顺序执行）
+- [ ] 阅读 Day4 讲义（`python_grammar.md` Day4 章节，15-20 分钟）
+- [ ] 完成 `day4/day4_handwrite.py` 的 TODO（45-70 分钟）
+- [ ] 运行并通过 Day4 断言  
+      `/usr/bin/python3 "/Users/chenqingan/Library/Mobile Documents/com~apple~CloudDocs/ml-rookie/day4/day4_handwrite.py"`
+- [ ] 故意制造 1 个 Day4 报错并修复（10 分钟）
+- [ ] 填写 Day4 log（`ml_learning_log.md`）
+- [ ] 阅读 Day5 讲义（`python_grammar.md` Day5 章节，15-20 分钟）
+- [ ] 运行 Day5 环境检查  
+      `/usr/bin/python3 "/Users/chenqingan/Library/Mobile Documents/com~apple~CloudDocs/ml-rookie/day5/day5_env_check.py"`
+- [ ] 完成 `day5/day5_handwrite.py` 的 TODO（45-70 分钟）
+- [ ] 运行并通过 Day5 断言  
+      `/usr/bin/python3 "/Users/chenqingan/Library/Mobile Documents/com~apple~CloudDocs/ml-rookie/day5/day5_handwrite.py"`
+- [ ] LeetCode 两题：`1. Two Sum`、`283. Move Zeroes`
+- [ ] 填写 Day5 log（`ml_learning_log.md`）
+- [ ] 一次提交到 GitHub：`git add . && git commit -m "complete day4 day5 + lc" && git push`
+
+---
+
+## 2. LeetCode 学习方法（含语法不会时处理）
+1. 先独立思考 20-30 分钟（先写伪代码/思路草稿）。
+2. 超过 20 分钟卡住：先看提示，不直接看完整题解。
+3. 还不会：看题解，但看完立刻关掉页面，自己闭卷重写。
+4. 语法不会时：
+   - 只补当前这题需要的 1 条语法，不扩展发散学习。
+   - 直接记录到 `my_leetcode_learning/wrongbook.md`（易错语法 + 正确最小写法）。
+   - 如果报错，先写下：报错原文、原因、改哪一行。
+5. 每题结束写 4 条复盘：
+   - 我一开始错在哪
+   - 正解核心思路一句话
+   - 时间复杂度 / 空间复杂度
+   - 下次识别这类题的关键词
