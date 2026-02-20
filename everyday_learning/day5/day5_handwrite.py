@@ -23,6 +23,8 @@ def get_device():
     1) 如果 mps 可用，返回 torch.device("mps")
     2) 否则返回 torch.device("cpu")
     """
+    if torch.backends.mps.is_available():
+        return torch.device("mps")
     return torch.device("cpu")
 
 
@@ -34,9 +36,9 @@ def make_data(device):
     3) x, y 都放到 device 上
     4) 返回 x, y
     """
-    x = torch.tensor([[0.0]], dtype=torch.float32, device=device)
-    y = torch.tensor([[0.0]], dtype=torch.float32, device=device)
-    return x, y
+    x = torch.tensor([[1.0], [2.0], [3.0], [4.0], [5.0]],dtype=torch.float32, device=device)
+    y = 2*x+1
+    return x,y
 
 
 def train_linear(x, y, device, epochs=300, lr=0.05):
@@ -53,8 +55,17 @@ def train_linear(x, y, device, epochs=300, lr=0.05):
        - optimizer.step()
     5) 返回 model, final_loss(float)
     """
-    model = None
+    model = nn.Linear(1,1).to(device)
+    loss_fn = nn.MSELoss()
+    optimizer = torch.optim.SGD(model.parameters(), lr=lr)
     final_loss = None
+    for epoch in range(epochs):
+        pred = model(x)
+        loss = loss_fn(pred, y)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+        final_loss = float(loss.item())
     return model, final_loss
 
 
@@ -65,8 +76,10 @@ def predict_one(model, device, x_value=4.0):
     2) 用 with torch.no_grad() 做前向
     3) 返回预测值（float）
     """
-    return -999.0
-
+    x_test = torch.tensor([[x_value]],dtype=torch.float32,device= device)
+    with torch.no_grad():
+        y_pred=model(x_test)
+    return float(y_pred.item())
 
 torch.manual_seed(42)
 os.environ.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
