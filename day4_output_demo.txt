@@ -1,0 +1,2 @@
+python is fun
+ml is practical.
