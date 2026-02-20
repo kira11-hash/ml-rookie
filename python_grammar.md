@@ -9,7 +9,7 @@
 
 ### 0.1 你每天的固定学习顺序
 1. 先读本讲义里“当天对应章节”（15-25分钟）。
-2. 再写 `handwrite/dayN_handwrite.py`（45-90分钟）。
+2. 再写 `dayN/dayN_handwrite.py`（45-90分钟）。
 3. 同一报错卡住超过10分钟，再来问我。
 4. 当天更新 `ml_learning_log.md`。
 
@@ -710,12 +710,12 @@ A：
 ## 5. Day1/Day2 验收标准（执行版）
 
 ## 5.1 Day1 验收
-1. `handwrite/day1_handwrite.py` 跑通并出现 `Day1 手写练习通过。`
+1. `day1/day1_handwrite.py` 跑通并出现 `Day1 手写练习通过。`
 2. 至少记录 1 个“报错 -> 原因 -> 修复”
 3. 能口述 `if / elif / else` 的执行顺序
 
 ## 5.2 Day2 验收
-1. `handwrite/day2_handwrite.py` 跑通并出现 `Day2 手写练习通过。`
+1. `day2/day2_handwrite.py` 跑通并出现 `Day2 手写练习通过。`
 2. 你能解释 `freq.get(word, 0) + 1` 在做什么
 3. 你能解释 `sorted(... key=lambda ...)` 为什么能排 Top10
 
@@ -906,7 +906,7 @@ def clean_text(text):
 
 ## 8.7 Day3 验收标准（执行版）
 
-1. `handwrite/day3_handwrite.py` 断言全部通过
+1. `day3/day3_handwrite.py` 断言全部通过
 2. 你能口述 `clean_text` 的 4 步流程
 3. 你能解释 `re.sub` 这两行各在做什么：
    - 去 URL
@@ -1086,7 +1086,7 @@ def clean_file(input_path, output_path):
 
 ## 9.8 Day4 验收标准（执行版）
 
-1. `handwrite/day4_handwrite.py` 断言全部通过  
+1. `day4/day4_handwrite.py` 断言全部通过  
 2. 你能解释为什么要用 `with open(...)`  
 3. 你能解释 `try-except` 里“专门异常 + 兜底异常”的意义  
 4. 你能口述 clean_file 的 6 步流程
@@ -1119,7 +1119,7 @@ export PYTORCH_ENABLE_MPS_FALLBACK=1
 或直接运行你仓库里的检查脚本：
 
 ```bash
-/usr/bin/python3 "/Users/chenqingan/Library/Mobile Documents/com~apple~CloudDocs/ml-rookie/handwrite/day5_env_check.py"
+/usr/bin/python3 "/Users/chenqingan/Library/Mobile Documents/com~apple~CloudDocs/ml-rookie/day5/day5_env_check.py"
 ```
 
 解释：
@@ -1275,7 +1275,7 @@ with torch.no_grad():
 
 ## 10.11 Day5 验收标准（执行版）
 
-1. `handwrite/day5_handwrite.py` 断言全部通过
+1. `day5/day5_handwrite.py` 断言全部通过
 2. 你能口述训练循环 5 步：数据 -> 前向 -> loss -> 反向 -> 更新
 3. 你能解释为什么要 `zero_grad()`
 4. 你能解释为什么推理要用 `torch.no_grad()`

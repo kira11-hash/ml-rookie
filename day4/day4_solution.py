@@ -5,8 +5,10 @@ Day4 参考解
 """
 
 import os
+from pathlib import Path
 
 print("=== Day4 参考解开始 ===")
+BASE_DIR = Path(__file__).resolve().parent
 
 
 def write_demo_file(path):
@@ -47,8 +49,8 @@ def clean_file(input_path, output_path):
         return False
 
 
-input_path = "day4_input_demo.txt"
-output_path = "day4_output_demo.txt"
+input_path = BASE_DIR / "day4_input_demo.txt"
+output_path = BASE_DIR / "day4_output_demo.txt"
 
 write_demo_file(input_path)
 ok = clean_file(input_path, output_path)
@@ -59,7 +61,7 @@ if ok:
         print("清洗后文件内容:")
         print(repr(f.read()))
 
-missing_ok = clean_file("not_exists_file.txt", "tmp_should_not_exist.txt")
+missing_ok = clean_file(BASE_DIR / "not_exists_file.txt", BASE_DIR / "tmp_should_not_exist.txt")
 print("不存在文件测试结果(应为False):", missing_ok)
 
 

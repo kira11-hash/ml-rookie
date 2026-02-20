@@ -5,8 +5,10 @@ Day4 手写练习（必须自己填空）
 """
 
 import os
+from pathlib import Path
 
 print("=== Day4 手写练习开始 ===")
+BASE_DIR = Path(__file__).resolve().parent
 
 
 # 任务1：写一个演示输入文件（供后续清洗）
@@ -41,8 +43,8 @@ def clean_file(input_path, output_path):
     return False
 
 
-input_path = "day4_input_demo.txt"
-output_path = "day4_output_demo.txt"
+input_path = BASE_DIR / "day4_input_demo.txt"
+output_path = BASE_DIR / "day4_output_demo.txt"
 
 write_demo_file(input_path)
 ok = clean_file(input_path, output_path)
@@ -55,7 +57,7 @@ if ok:
 
 
 # 可选：测试不存在的文件（应返回 False）
-missing_ok = clean_file("not_exists_file.txt", "tmp_should_not_exist.txt")
+missing_ok = clean_file(BASE_DIR / "not_exists_file.txt", BASE_DIR / "tmp_should_not_exist.txt")
 print("不存在文件测试结果(应为False):", missing_ok)
 
 

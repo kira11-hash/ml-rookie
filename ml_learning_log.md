@@ -16,7 +16,7 @@
 ## 2026-02-17（预备周 Day 1）
 
 ### 今日计划
-- [x] 完成 `handwrite/day1_handwrite.py`
+- [x] 完成 `day1/day1_handwrite.py`
 - [x] 理解变量 / if判断 / print输出
 - [x] 完成 `grade_level` 和 `BMI` 两段逻辑
 - [x] 至少运行脚本 3 次
@@ -50,7 +50,7 @@
 ## 2026-02-18（预备周 Day 2）
 
 ### 今日计划
-- [x] 完成 `handwrite/day2_handwrite.py`
+- [x] 完成 `day2/day2_handwrite.py`
 - [x] 理解 `list / dict / for / enumerate` 基础语法
 - [x] 完成 `top10_word_frequency(text)` 函数（清洗 + 统计 + 排序）
 - [x] 运行脚本并通过全部断言
@@ -134,7 +134,7 @@
 ## 2026-02-19（预备周 Day 3）
 
 ### 今日计划
-- [x] 完成 `handwrite/day3_handwrite.py`
+- [x] 完成 `day3/day3_handwrite.py`
 - [x] 理解函数拆分：`normalize_spaces` + `clean_text`
 - [x] 理解字符串处理：`lower / split / join / strip`
 - [x] 理解正则清洗：`re.sub`（去 URL、去非字母）
@@ -239,14 +239,14 @@
 
 ### 明日任务（2026-02-20 Day 4）
 - 文件IO / 异常处理（try-except）
-- 完成 `handwrite/day4_handwrite.py`（已创建，待完成）
+- 完成 `day4/day4_handwrite.py`（已创建，待完成）
 
 ---
 
 ## 2026-02-20（预备周 Day 4）模板
 
 ### 今日计划
-- [ ] 完成 `handwrite/day4_handwrite.py`
+- [ ] 完成 `day4/day4_handwrite.py`
 - [ ] 理解 `with open(..., mode, encoding="utf-8")` 的标准写法
 - [ ] 理解 `try-except`：专门异常 + 兜底异常
 - [ ] 实现 `clean_file(input_path, output_path)` 并通过断言
@@ -311,7 +311,7 @@
 
 ### 今日计划
 - [ ] 环境检查通过（PyTorch + MPS 可用性）
-- [ ] 完成 `handwrite/day5_handwrite.py`
+- [ ] 完成 `day5/day5_handwrite.py`
 - [ ] 理解最小训练循环：`forward -> loss -> backward -> step`
 - [ ] LeetCode 2题：两数之和、移动零
 - [ ] Git 最小闭环：`init/add/commit/log`
@@ -324,7 +324,7 @@
 ### 环境检查（Day5）
 - 命令1：`export PYTORCH_ENABLE_MPS_FALLBACK=1`
 - 命令2：`/usr/bin/python3 -c "import torch; print(torch.__version__); print('mps:', torch.backends.mps.is_available())"`
-- 可选脚本：`/usr/bin/python3 "/Users/chenqingan/Library/Mobile Documents/com~apple~CloudDocs/ml-rookie/handwrite/day5_env_check.py"`
+- 可选脚本：`/usr/bin/python3 "/Users/chenqingan/Library/Mobile Documents/com~apple~CloudDocs/ml-rookie/day5/day5_env_check.py"`
 - PyTorch 版本：
 - MPS 可用（True/False）：
 - 实际使用设备（`mps/cpu`）：

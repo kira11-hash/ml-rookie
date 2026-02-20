@@ -39,7 +39,7 @@ git add .
 
 也可以只加某个文件：
 ```bash
-git add handwrite/day4_handwrite.py
+git add day4/day4_handwrite.py
 ```
 
 ### 3.3 提交版本
@@ -79,7 +79,7 @@ git show <commit_id>:<file_path>
 ```
 例子：
 ```bash
-git show b99ed3a:handwrite/day4_handwrite.py
+git show b99ed3a:day4/day4_handwrite.py
 ```
 
 ### 4.2 对比两个提交之间的变化

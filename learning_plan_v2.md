@@ -30,7 +30,7 @@
 5. Day5：PyTorch最小预热 + LeetCode（两数之和、移动零）
 
 验收标准：
-1. 完成 5 个手写文件（`handwrite/day1~day5_handwrite.py`）
+1. 完成 5 个手写文件（`day1/day1_handwrite.py ~ day5/day5_handwrite.py`）
 2. 总学习时长 >= 8 小时
 3. 独立解决 >= 2 个报错
 4. Python 自评 >= 4/10
@@ -82,8 +82,8 @@
 
 ## 5. 日常执行规则（固定）
 1. 先看 `python_grammar.md` 当天语法
-2. 先写 `handwrite/dayN_handwrite.py`
-3. 卡住 30 分钟再看 `solutions/dayN_solution.py`
+2. 先写 `dayN/dayN_handwrite.py`
+3. 卡住 30 分钟再看 `dayN/dayN_solution.py`
 4. 当天更新 `ml_learning_log.md`
 
 ## 6. 风险控制
