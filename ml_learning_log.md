@@ -243,62 +243,140 @@
 
 ---
 
-## 2026-02-20（预备周 Day 4）模板
+## 2026-02-20（预备周 Day 4）
 
 ### 今日计划
-- [ ] 完成 `everyday_learning/day4/day4_handwrite.py`
-- [ ] 理解 `with open(..., mode, encoding="utf-8")` 的标准写法
-- [ ] 理解 `try-except`：专门异常 + 兜底异常
-- [ ] 实现 `clean_file(input_path, output_path)` 并通过断言
-- [ ] 独立修复至少 1 个真实报错
+- [x] 完成 `everyday_learning/day4/day4_handwrite.py` 第一版
+- [x] 理解 `with open(..., mode, encoding="utf-8")` 的标准写法
+- [x] 理解 `try-except`：专门异常 + 兜底异常
+- [ ] 实现 `clean_file(input_path, output_path)` 并通过全部断言
+- [x] 独立定位并修复至少 1 个真实报错
 
 ### 时间记录
-- 开始时间：
-- 结束时间：
-- 专注时长（分钟）：
+- 开始时间：2026-02-20 15:30
+- 结束时间：2026-02-20 16:30
+- 专注时长（分钟）：60
 
 ### 今日完成
-- [ ]
-- [ ]
-- [ ]
-- [ ]
+- [x] 完成 Day4 手写文件主流程（`write_demo_file` / `clean_line` / `clean_file`）
+- [x] 搞清文件读写三种常用读取方式：`read` / `readline` / `readlines`
+- [x] 搞清 `f.write(c + "\n")`、`"w"` 与 `"a"` 的区别
+- [x] 完成 Git/GitHub 连通并成功 `push` 到远程
+- [x] 搞清 `Exception as e`、`__file__`、`Path(...).resolve().parent`、`pass`
 
 ### 易错语法提醒（Day4）
-- [ ] 写文件用 `"w"` 会覆盖原文件，注意是否需要备份
-- [ ] `write()` 不会自动换行，必要时手动加 `\\n`
-- [ ] 记得指定 `encoding="utf-8"`
-- [ ] 文件读写优先用 `with open(...)`，不要忘记关闭文件
-- [ ] `try` 后至少要有一个 `except`
-- [ ] `except FileNotFoundError` 建议写在 `except Exception` 前面
-- [ ] 成功/失败路径都要 `return`，避免返回 `None`
-- [ ] 先读行列表，再清洗，再写回，避免流程混乱
+- [x] 写文件用 `"w"` 会覆盖原文件，追加要用 `"a"`
+- [x] `write()` 不会自动换行，需要手动加 `\n`
+- [x] `\s` 与 `\S` 含义相反：前者空白，后者非空白
+- [x] `"\n"` 和 `"\\n"` 含义不同（真换行 vs 字面字符）
+- [x] `except Exception as e` 中 `e` 是“异常对象变量名”，可自定义
+- [x] `with open(...) as f` 会自动关闭文件
+- [x] `clean_file` 里不要写死文件名，要用 `input_path/output_path`
 
 ### 今日报错与修复
 - 报错1：
-  - 报错信息（原文）：
-  - 原因定位：
-  - 修复动作：
-  - 修复后结果：
-- 报错2（可选）：
-  - 报错信息（原文）：
-  - 原因定位：
-  - 修复动作：
-  - 修复后结果：
+  - 报错信息（原文）：`AssertionError: clean_line 规则有误`
+  - 原因定位：`clean_line` 用了 `re.sub(r"\S+", " ", line)`，把非空白字符都替换掉了；且未正确压缩空白。
+  - 修复动作：改思路为压缩空白（`" ".join(line.split())`）或用 `re.sub(r"\s+", " ", line)`。
+  - 修复后结果：定位完成，准备按最终版本改到断言通过。
+- 报错2：
+  - 报错信息（原文）：`with open(..., "w","encoding = utf-8")` 参数写法错误
+  - 原因定位：`encoding` 被写成了字符串位置参数，而不是关键字参数。
+  - 修复动作：改为 `with open(..., "w", encoding="utf-8")`
+  - 修复后结果：语法问题已修复。
+- 报错3：
+  - 报错信息（现象）：输出文件内容异常（`' \n'`）
+  - 原因定位：`write_demo_file` 内容不符合题目要求且 `clean_line` 逻辑错误导致有效字符被清空。
+  - 修复动作：将 demo 文本改为题目指定内容，并按正确清洗规则处理。
+  - 修复后结果：问题已定位，下一步完成最终修复并重跑断言。
 
 ### 关键代码/结果记录
-- 输入文件路径：
-- 输出文件路径：
-- `clean_file` 返回值：
-- 输出文件内容（repr）：
-- 不存在文件测试返回值（应为 False）：
-- 终端最终输出是否包含：`Day4 手写练习通过。`（是/否）
+- 输入文件路径：`/Users/chenqingan/Library/Mobile Documents/com~apple~CloudDocs/ml-rookie/everyday_learning/day4/day4_input_demo.txt`
+- 输出文件路径：`/Users/chenqingan/Library/Mobile Documents/com~apple~CloudDocs/ml-rookie/everyday_learning/day4/day4_output_demo.txt`
+- 一次运行时 `clean_file` 返回值：`True`
+- 一次运行时输出文件内容（repr）：`' \n'`
+- 不存在文件测试返回值（应为 False）：`False`
+- 终端最终输出是否包含：`Day4 手写练习通过。`：否（当前仍在修复阶段）
+
+### 今日提问与答案（Day4，一一对应）
+1. 问：`-m` 是什么意思，`pip` 是什么？  
+答：`-m` 是让 Python 运行某个模块；`pip` 是 Python 包管理工具。
+
+2. 问：`mps` 和“解释器”是什么意思？  
+答：`mps` 是苹果芯片上的计算加速后端；解释器是执行 Python 源码的程序（如 `/usr/bin/python3`）。
+
+3. 问：`torch` 是谁做的，是否有替代并更快？  
+答：PyTorch 由 Meta/社区主导；有很多替代框架，特定场景可更快，但通用生态上 PyTorch 很强。
+
+4. 问：`python3 -m pip install torch` 原理是什么，怎么知道去哪下载？  
+答：`pip` 默认从 PyPI 索引解析并下载与你系统匹配的 wheel 包并安装。
+
+5. 问：`readline()` 和 `readlines()` 区别是什么？  
+答：`readline()` 读一行字符串；`readlines()` 读所有行并返回列表。
+
+6. 问：`with open(...): data=f.read()` 读完后数据长什么样？  
+答：`data` 是一个完整字符串（含 `\n`）。
+
+7. 问：`print(readlines结果)` 会怎样？  
+答：会打印列表字面量形式，如 `['a\\n', 'b\\n']`。
+
+8. 问：`readlines` 和 `read` 有啥区别？  
+答：前者返回按行列表，后者返回整段字符串。
+
+9. 问：`f.write("hello\\n")` 写到哪里？  
+答：取决于模式：`"w"` 覆盖写，`"a"` 末尾追加。
+
+10. 问：`except Exception as e` 里的 `e` 是什么？  
+答：`e` 是异常对象变量名，用于拿到具体错误信息，可自定义命名。
+
+11. 问：`def clean_file(input_path, output_path):` 输入和输出分别是什么？  
+答：参数 `input_path/output_path` 是输入；函数输出看 `return`（如 True/False）。
+
+12. 问：`for line in lines ... if c: cleaned_lines.append(c)` 是什么意思？  
+答：逐行清洗并丢弃空行，只把有效结果加入列表。
+
+13. 问：`f.write(c + "\\n")` 是什么意思？  
+答：写入 `c` 再写换行。
+
+14. 问：`+` 是拼接吗？`\\n` 和 `\n` 为什么不同？  
+答：`+` 可拼接字符串；`\n` 是换行，`\\n` 是反斜杠+n 的字面字符。
+
+15. 问：如果要写 `cb`，该怎么写？  
+答：可写 `f.write("cb\\n")`（固定）或 `f.write(c + b + "\\n")`（变量拼接）。
+
+16. 问：`import os` 和 `from pathlib import Path` 是什么？  
+答：导入系统功能库和路径处理类，分别用于系统接口与路径对象化操作。
+
+17. 问：为什么不能默认导入全部模块？  
+答：会拖慢启动、增加内存、制造命名冲突并降低可维护性。
+
+18. 问：`BASE_DIR = Path(__file__).resolve().parent` 是什么语法？  
+答：用当前脚本路径 `__file__` 计算脚本所在目录，得到稳定基准路径。
+
+19. 问：`pass` 是什么意思？  
+答：占位语句，表示先不做任何事但语法完整。
+
+20. 问：学了会忘、频繁查讲义正常吗？  
+答：正常；高频查 + 高频用会形成长期记忆。
+
+21. 问：大神是不是也从“没思路”开始？  
+答：是；关键在持续练习、复盘与复刷机制。
+
+22. 问：Day4 为什么断言失败，应该改哪里？  
+答：核心在 `clean_line`（`\\S+` 用反了）和 demo 输入内容不对，另有路径写死/参数写法问题。
+
+23. 问：`\\s` 和 `\\S` 大小写含义不同吗？  
+答：是，二者是反义：`\s` 空白，`\S` 非空白。
+
+24. 问：当前 Day4 还有什么问题？  
+答：剩余关键是修正 `write_demo_file` 内容与 `clean_line` 逻辑，使断言全部通过。
 
 ### 自检（Day4）
-- 我能解释 `with open(...) as f` 为什么更安全：`是 / 否`
-- 我能解释 `r / w / a` 三种模式区别：`是 / 否`
-- 我能解释 `FileNotFoundError` 与 `Exception as e` 的区别：`是 / 否`
-- 我能口述 clean_file 的 6 步流程：`是 / 否`
-- Python自评（1-10）：
+- 我能解释 `with open(...) as f` 为什么更安全：是
+- 我能解释 `r / w / a` 三种模式区别：是
+- 我能解释 `FileNotFoundError` 与 `Exception as e` 的区别：是
+- 我能口述 clean_file 的 6 步流程：是（但实现仍需收口）
+- Python自评（1-10）：6
 
 ### 明日任务（2026-02-21 Day 5）
 - PyTorch 预热（tensor/device/linear）

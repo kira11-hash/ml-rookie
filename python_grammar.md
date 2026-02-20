@@ -952,6 +952,19 @@ open(path, mode, encoding="utf-8")
 with open("a.txt", "r", encoding="utf-8") as f:
     data = f.read()
 ```
+`with open(...) as f` 的意思：
+
+1. `open("a.txt", "r", encoding="utf-8")`：以“读模式”打开文件。  
+2. `as f`：把这个打开的文件对象命名为 `f`。  
+3. `with`：代码块结束后，自动关闭文件（不用手动 `f.close()`）。
+
+`data = f.read()` 的意思：
+
+1. `f.read()`：把文件全部内容读出来（类型是字符串 `str`）。  
+2. `data = ...`：把读到的内容存到变量 `data` 里，后面可继续处理。
+
+所以整体是：  
+“打开文件 -> 读全部内容到 `data` -> 自动关文件”。
 
 好处：
 1. 用完自动关闭文件
@@ -1040,7 +1053,7 @@ def clean_file(input_path, output_path):
 
         with open(output_path, "w", encoding="utf-8") as f:
             for c in cleaned_lines:
-                f.write(c + "\\n")
+                f.write(c + "\n")
 
         return True
     except FileNotFoundError:

@@ -6,7 +6,7 @@ Day4 手写练习（必须自己填空）
 
 import os
 from pathlib import Path
-
+import re
 print("=== Day4 手写练习开始 ===")
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -16,8 +16,9 @@ def write_demo_file(path):
     # TODO: 用 with open(..., "w", encoding="utf-8") 写入演示文本
     # 演示文本建议：
     #   "  Python   is FUN  \\n\\n  ML   is practical.  \\n"
-    pass
-
+    with open(path,"w",encoding="utf-8") as f:
+        f.write("  Python   is FUN  \n\n  ML   is practical.  \n")
+    
 
 # 任务2：清洗单行文本
 # 目标：
@@ -27,8 +28,10 @@ def write_demo_file(path):
 # 4) 若清洗后为空字符串，返回空字符串
 def clean_line(line):
     # TODO: 在下面补代码
-    return ""
-
+    line = line.lower()
+    line = line.strip()
+    line = re.sub(r"\s+"," ",line)
+    return line
 
 # 任务3：实现 clean_file
 # 要求：
@@ -40,8 +43,24 @@ def clean_line(line):
 def clean_file(input_path, output_path):
     # TODO: 用 try-except 包裹文件读写
     # 提示：先 except FileNotFoundError，再 except Exception as e
-    return False
+    try:
+        with open(input_path,"r",encoding = "utf-8") as f:
+            lines = f.readlines()
+        cleaned_lines=[]
 
+        for line in lines:
+            c= clean_line(line)
+            if c:
+                cleaned_lines.append(c)
+        with open(output_path, "w", encoding="utf-8") as f:
+            for c in cleaned_lines:
+                f.write(c + "\n")
+        return True
+    
+    except FileNotFoundError:
+        return False
+    except Exception:
+        return False
 
 input_path = BASE_DIR / "day4_input_demo.txt"
 output_path = BASE_DIR / "day4_output_demo.txt"

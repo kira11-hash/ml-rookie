@@ -3,14 +3,14 @@
 > 日期基准：2026-02-20（今天）
 
 ## 1. 今日主线任务（按顺序执行）
-- [ ] 阅读 Day4 讲义（`python_grammar.md` Day4 章节，15-20 分钟）
-- [ ] 完成 `everyday_learning/day4/day4_handwrite.py` 的 TODO（45-70 分钟）
-- [ ] 运行并通过 Day4 断言  
+- [✅] 阅读 Day4 讲义（`python_grammar.md` Day4 章节，15-20 分钟）
+- [✅ ] 完成 `everyday_learning/day4/day4_handwrite.py` 的 TODO（45-70 分钟）
+- [✅ ] 运行并通过 Day4 断言  
       `/usr/bin/python3 "/Users/chenqingan/Library/Mobile Documents/com~apple~CloudDocs/ml-rookie/everyday_learning/day4/day4_handwrite.py"`
-- [ ] 故意制造 1 个 Day4 报错并修复（10 分钟）
-- [ ] 填写 Day4 log（`ml_learning_log.md`）
+- [✅] 故意制造 1 个 Day4 报错并修复（10 分钟）
+- [✅] 填写 Day4 log（`ml_learning_log.md`）
 - [ ] 阅读 Day5 讲义（`python_grammar.md` Day5 章节，15-20 分钟）
-- [ ] 运行 Day5 环境检查  
+- [✅] 运行 Day5 环境检查  
       `/usr/bin/python3 "/Users/chenqingan/Library/Mobile Documents/com~apple~CloudDocs/ml-rookie/everyday_learning/day5/day5_env_check.py"`
 - [ ] 完成 `everyday_learning/day5/day5_handwrite.py` 的 TODO（45-70 分钟）
 - [ ] 运行并通过 Day5 断言  
