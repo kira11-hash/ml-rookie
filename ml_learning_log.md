@@ -385,95 +385,216 @@
 
 ---
 
-## 2026-02-21（预备周 Day 5）模板
+## 2026-02-21（预备周 Day 5）
 
 ### 今日计划
-- [ ] 环境检查通过（PyTorch + MPS 可用性）
-- [ ] 完成 `everyday_learning/day5/day5_handwrite.py`
-- [ ] 理解最小训练循环：`forward -> loss -> backward -> step`
-- [ ] LeetCode 2题：两数之和、移动零
-- [ ] Git 最小闭环：`init/add/commit/log`
+- [x] 环境检查通过（PyTorch + MPS 可用性）
+- [x] 完成 `everyday_learning/day5/day5_handwrite.py`
+- [x] 理解最小训练循环：`forward -> loss -> backward -> step`
+- [ ] LeetCode 2题：两数之和、移动零（你说写完后再二次更新）
+- [x] Git 最小闭环：`init/add/commit/log/push`
 
 ### 时间记录
-- 开始时间：
-- 结束时间：
-- 专注时长（分钟）：
+- 按本次要求：不记录具体时间
 
 ### 环境检查（Day5）
 - 命令1：`export PYTORCH_ENABLE_MPS_FALLBACK=1`
 - 命令2：`/usr/bin/python3 -c "import torch; print(torch.__version__); print('mps:', torch.backends.mps.is_available())"`
 - 可选脚本：`/usr/bin/python3 "/Users/chenqingan/Library/Mobile Documents/com~apple~CloudDocs/ml-rookie/everyday_learning/day5/day5_env_check.py"`
-- PyTorch 版本：
-- MPS 可用（True/False）：
-- 实际使用设备（`mps/cpu`）：
+- PyTorch 版本：`2.8.0`
+- MPS 可用（True/False）：`True`
+- 实际使用设备（`mps/cpu`）：`mps`
 
 ### 今日完成
-- [ ]
-- [ ]
-- [ ]
-- [ ]
+- [x] 完成 Day5 环境搭建与依赖修复（`torch`、`numpy`）
+- [x] 跑通 Day5 参考流程并通过断言
+- [x] 理解 Tensor / device / Linear / loss / backward / optimizer
+- [x] 完成 GitHub SSH 链路与远程 push
 
 ### 易错语法提醒（Day5）
-- [ ] 模型和数据必须在同一个 device（都在 `mps` 或都在 `cpu`）
-- [ ] 训练三连顺序不能错：`zero_grad -> backward -> step`
-- [ ] 推理时要用 `with torch.no_grad():`
-- [ ] `loss.item()` 才是 Python 数值，`loss` 本体是 Tensor
-- [ ] `nn.Linear(1,1)` 输入形状通常是 `[N, 1]`
-- [ ] 学习率过大可能不收敛，过小会很慢
-- [ ] `torch.manual_seed(...)` 便于复现实验
+- [x] 模型和数据必须在同一个 device（都在 `mps` 或都在 `cpu`）
+- [x] 训练三连顺序不能错：`zero_grad -> backward -> step`
+- [x] 推理时要用 `with torch.no_grad():`
+- [x] `loss.item()` 才是 Python 数值，`loss` 本体是 Tensor
+- [x] `nn.Linear` 的 `L` 必须大写（`nn.linear` 会报错）
+- [x] `range(epochs)` 的循环次数要先定义好 `epochs`
 
 ### 今日报错与修复
 - 报错1：
-  - 报错信息（原文）：
-  - 原因定位：
-  - 修复动作：
-  - 修复后结果：
-- 报错2（可选）：
-  - 报错信息（原文）：
-  - 原因定位：
-  - 修复动作：
-  - 修复后结果：
+  - 报错信息（原文）：`ModuleNotFoundError: No module named 'torch'`
+  - 原因定位：`/usr/bin/python3` 环境里未安装 PyTorch
+  - 修复动作：执行 `/usr/bin/python3 -m pip install torch`
+  - 修复后结果：可导入 `torch`，MPS 可用
+- 报错2：
+  - 报错信息（原文）：`UserWarning: Failed to initialize NumPy: No module named 'numpy'`
+  - 原因定位：PyTorch 运行时缺少 `numpy`
+  - 修复动作：执行 `/usr/bin/python3 -m pip install numpy`
+  - 修复后结果：警告消失，环境检查通过
+- 报错3：
+  - 报错信息（原文）：`AttributeError: module 'torch.nn' has no attribute 'linear'`
+  - 原因定位：大小写写错，应为 `nn.Linear`
+  - 修复动作：改成 `nn.Linear(1, 1)`
+  - 修复后结果：模型创建正常
 
 ### 关键结果记录（Day5）
-- `day5_handwrite.py` 是否通过：`是 / 否`
-- 终端最终输出是否包含：`Day5 手写练习通过。`（是/否）
-- 训练最终 `final_loss`：
-- `x=4.0` 的预测值（应接近 9）：
-- 训练循环是否能口述 5 步：`是 / 否`
+- `day5_handwrite.py` 是否通过：`是`
+- 终端最终输出是否包含：`Day5 手写练习通过。`：`是`
+- 训练最终 `final_loss`：已达标（`< 0.2`）
+- `x=4.0` 的预测值（应接近 9）：已达标（接近 `9`）
+- 训练循环是否能口述 5 步：`是`
 
 ### LeetCode 记录（Day5）
 - 题1：两数之和（`1. Two Sum`）：
-  - 是否独立完成：
-  - 是否看题解：
-  - 复盘一句话：
+  - 是否独立完成：待你二次更新
+  - 是否看题解：待你二次更新
+  - 复盘一句话：待你二次更新
 - 题2：移动零（`283. Move Zeroes`）：
-  - 是否独立完成：
-  - 是否看题解：
-  - 复盘一句话：
+  - 是否独立完成：待你二次更新
+  - 是否看题解：待你二次更新
+  - 复盘一句话：待你二次更新
 
 ### Git 最小闭环记录（Day5）
-- `git init`：`完成 / 未完成`
-- `git add .`：`完成 / 未完成`
-- `git commit -m "..."`：`完成 / 未完成`
-- `git log --oneline -n 3`：`完成 / 未完成`
-- 今日结论：Git 是否影响主线学习节奏：`是 / 否`
+- `git init`：`完成`
+- `git add .`：`完成`
+- `git commit -m "..."`：`完成`
+- `git log --oneline -n 3`：`完成`
+- `git push`：`完成`
+- 今日结论：Git 没有影响主线学习节奏
 
 ### 今日提问与答案（Day5，一一对应）
-1. 问：  
-答：
-2. 问：  
-答：
-3. 问：  
-答：
+1. 问：MPS fallback 到 CPU 是什么意思？苹果芯片和 x86 有啥区别？  
+答：MPS 不支持的算子会自动在 CPU 执行避免中断；Apple Silicon 是 ARM64 + 统一内存，x86 常见是 CPU/GPU 分离生态。
+
+2. 问：`mps` 是啥？  
+答：苹果 `Metal Performance Shaders` 后端，PyTorch 在 Mac 上的 GPU 加速通道。
+
+3. 问：`x = torch.tensor(...)` 输出啥样？背后语法是什么？  
+答：会输出 `tensor([[1.],[2.],[3.]])`；本质是“函数调用 + 关键字参数 + 赋值”。
+
+4. 问：为什么是二维列表？如何表示多列？  
+答：外层是行、内层是列；例如 `[[1,2],[3,4]]` 是 2x2。
+
+5. 问：`2.0` 必须写小数吗？  
+答：不必须；写 `2` 也行，`dtype=torch.float32` 会统一转成浮点。
+
+6. 问：`x = x.to(device)`、`model = model.to(device)` 是啥语法？  
+答：调用 `.to(...)` 方法把对象移动到设备并重新赋值。
+
+7. 问：`.to` 到底做什么？  
+答：转换目标（设备/数据类型），常用是移到 `mps/cpu`。
+
+8. 问：`torch.nn` 和 `nn` 是啥？  
+答：`torch.nn` 是神经网络模块库；`nn` 是 `import torch.nn as nn` 的别名。
+
+9. 问：`nn.Linear(1,1)` 和 `pred = model(x)` 是啥？  
+答：建立 1 输入 1 输出线性层；后者做前向推理得到预测。
+
+10. 问：MSE 是什么？  
+答：`(预测-真实)^2` 后求平均。
+
+11. 问：`optimizer` 和 `loss` 分别是什么实体？  
+答：`optimizer` 是更新参数的优化器对象；`loss` 是损失 Tensor。
+
+12. 问：反向传播+更新可否给实际数字例子？  
+答：已用 `y=2x+1` 单样本演示 `backward` 得梯度、`step` 更新 `w,b` 后 loss 下降。
+
+13. 问：SGD 是不是反向传播？全称是啥？  
+答：不是；反向传播算梯度，SGD 用梯度更新参数；全称 `Stochastic Gradient Descent`。
+
+14. 问：`epoch` 和 `batch` 是什么？  
+答：`epoch` 是全量数据过一遍；`batch` 是一次喂入的小批量。
+
+15. 问：`for epoch in range(epochs)` 里 `range` 干啥？  
+答：生成循环次数，控制训练重复执行多少轮。
+
+16. 问：`epochs` 要自己设吗？  
+答：要，属于超参数。
+
+17. 问：`raise SystemExit(1)` 是啥？  
+答：立即退出程序，退出码 1 表示异常退出。
+
+18. 问：`torch.backends.mps` 常用属性有哪些？  
+答：常用 `is_available()`、`is_built()`。
+
+19. 问：`final_loss = float(loss.item())` 是啥语法？  
+答：从标量 Tensor 取 Python 数值并转为 `float` 后赋值。
+
+20. 问：`loss.backward(); optimizer.step()` 各做什么？  
+答：`backward` 计算梯度；`step` 按梯度更新参数。
+
+21. 问：`predict_one(...)` 函数每行在做什么？  
+答：构造 `(1,1)` 输入、`no_grad` 推理、提取浮点返回。
+
+22. 问：`nn.linear` 报错为什么？  
+答：大小写错误，正确是 `nn.Linear`。
+
+23. 问：Day5 通过后是否可以去 LeetCode？Day6 做啥？  
+答：可以；Day6 按复习日策略执行，不上新知识。
+
+24. 问：Hot100 为什么像 300 题、刷题策略怎么定、八股是什么？  
+答：你看到的是扩展合集；先做核心高频；八股指 ML/推荐/LLM 工程常问概念体系。
+
+25. 问：做完题若思路不清是否加类似题？  
+答：已定策略：思路不清或看题解才做出则加 1 题巩固；思路清楚则下一题。
 
 ### 自检（Day5）
-- 我能解释 Tensor 的 `shape/dtype/device`：`是 / 否`
-- 我能解释 `zero_grad()` 的作用：`是 / 否`
-- 我能解释 `torch.no_grad()` 的作用：`是 / 否`
-- 我能解释为什么模型和数据要同设备：`是 / 否`
-- Python自评（1-10）：
+- 我能解释 Tensor 的 `shape/dtype/device`：`是`
+- 我能解释 `zero_grad()` 的作用：`是`
+- 我能解释 `torch.no_grad()` 的作用：`是`
+- 我能解释为什么模型和数据要同设备：`是`
+- 我能解释 `nn.Linear(1,1)` 的输入输出维度含义：`是`
+- Python自评（1-10）：7
 
-### 明日任务（Week 1 Day 1）
-- 跑通 MNIST 训练循环
-- 目标：测试集准确率 > 95%
-- LeetCode 继续 1 题
+### 明日任务（Day 6，MNIST 验收日）
+- 只做 MNIST 验收：完成 `everyday_learning/day6/day6_handwrite.py`
+- 目标：`phase1 >= 92%`，`phase2 >= 95%`
+- 记录：`final loss`、`test acc`、`elapsed sec`
+
+---
+
+## 2026-02-21（Day6：MNIST 验收日）
+
+### 今日计划
+- [ ] 只做 MNIST 验收（不并行新任务）
+- [ ] 运行环境检查：`everyday_learning/day6/day6_env_check.py`
+- [ ] 完成 `everyday_learning/day6/day6_handwrite.py`
+- [ ] 记录四个指标：`final loss`、`phase1 acc`、`phase2 acc`、`elapsed sec`
+- [ ] 达标：`phase1 >= 92%`，`phase2 >= 95%`
+
+### 今日产出（完成后填写）
+- device used：
+- final loss：
+- phase1 test acc（%）：
+- phase2 test acc（%）：
+- elapsed sec：
+- 是否通过断言：
+
+### 今日报错与修复（完成后填写）
+1. 报错信息：
+   - 原因定位：
+   - 修复动作：
+   - 复盘：
+2. 报错信息：
+   - 原因定位：
+   - 修复动作：
+   - 复盘：
+
+### 今日提问与答案（Day6，一一对应）
+1. 问：
+   答：
+2. 问：
+   答：
+3. 问：
+   答：
+
+### Day6 自检
+- 我能解释 `DataLoader` 的作用：
+- 我能解释 `train()` 和 `eval()` 的区别：
+- 我能解释 `argmax(dim=1)` 为什么可用于分类预测：
+- 我能解释 `CrossEntropyLoss` 的输入输出要求：
+- 我能口述完整训练流程：
+
+### 明日计划（2026-02-22，复习日）
+- 复习 Day1-Day5 + Day6 核心知识，不上新任务。
+- 闭卷重写 2 个函数（建议：`top10_word_frequency`、`clean_file`）。
+- 复盘本周易错点并更新 `wrongbook.md`。

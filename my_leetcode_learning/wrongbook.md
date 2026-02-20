@@ -12,3 +12,301 @@
 - 修复动作：
 - 一句话记忆：
 
+---
+
+## 1、两数之和
+
+### A. 时间复杂度速记（刷题必看）
+
+### 1. 定义
+时间复杂度描述的是：输入规模 `n` 增大时，算法执行步数如何增长。  
+关注增长趋势，不看具体毫秒数。
+
+### 2. 常见级别
+- `O(1)`：常数时间
+- `O(log n)`：对数时间（每次规模减半）
+- `O(n)`：线性时间（单次遍历）
+- `O(n log n)`：常见排序级别
+- `O(n^2)`：双重循环
+- `O(2^n)`：指数增长（通常很慢）
+
+### 3. 计算规则（入门版）
+1. 顺序代码：复杂度相加后取最大项。
+2. 嵌套循环：复杂度相乘。
+3. 忽略常数和低阶项。
+   - `3n + 5 -> O(n)`
+   - `n^2 + n -> O(n^2)`
+
+### 4. Two Sum 例子
+1. 暴力双循环：`O(n^2)`  
+   外层 `n` 次，内层近似 `n` 次，总量约 `n*n`。
+2. 哈希表一遍扫：`O(n)`  
+   遍历 `n` 次，每次字典查找/插入平均 `O(1)`。
+
+### 4.1 Two Sum 暴力法循环边界优化（本次关键收获）
+错误直觉：
+1. 用两层全范围循环 + `i != j` 判定。
+2. 这样会重复比较 `(i, j)` 和 `(j, i)`，还要多写一层判断。
+
+更优写法：
+```python
+for i in range(len(nums)):
+    for j in range(i + 1, len(nums)):
+        if nums[i] + nums[j] == target:
+            return [i, j]
+```
+
+为什么更好：
+1. `j` 从 `i+1` 开始，天然保证 `i != j`。
+2. 每对下标只比较一次，不会重复。
+3. 代码更简洁，逻辑更清晰。
+
+### 5. 刷题时必须写
+每道题至少写清：
+1. 时间复杂度
+2. 空间复杂度
+3. 你为什么能从慢解法优化到快解法
+
+### B. 类型注解 / 类 / `__init__` / `self` 速记
+
+### 1. 类型注解（Type Hints）
+例子：
+```python
+def twoSum(self, nums: List[int], target: int) -> List[int]:
+```
+含义：
+1. `nums: List[int]`：`nums` 期望是“整数列表”
+2. `target: int`：`target` 期望是整数
+3. `-> List[int]`：返回值期望是“整数列表”
+
+注意：
+1. 类型注解主要是可读性和 IDE 提示
+2. Python 默认不会因为注解自动做强类型检查
+3. 使用 `List` 通常需要：
+```python
+from typing import List
+```
+
+### 2. 类（class）是什么
+`class` 是模板，实例（对象）是模板创建出来的具体实体。  
+LeetCode 用 `class Solution:` 是平台约定写法。
+
+### 3. `__init__` 是什么
+`__init__` 是初始化方法。  
+当你创建对象时会自动调用，用来给对象初始赋值。
+
+### 4. `self` 是什么
+`self` 代表“当前这个对象本身”。  
+它让你在方法里访问/修改当前对象自己的属性。
+
+例子：
+```python
+class Student:
+    def __init__(self, name):
+        self.name = name
+```
+`self.name = name` 的意思是：把传入的 `name` 存到“这个对象自己的 `name` 属性”里。
+
+### C. 易错语法提醒（本题）
+1. 判断相等必须用 `==`，不能用 `=`。
+2. `=` 是赋值，`==` 才是布尔比较。
+
+### D. 哈希表（Two Sum 核心）
+
+### 1. 是什么
+哈希表在 Python 里就是 `dict`。  
+核心作用：用 `key` 快速查找 `value`，平均时间复杂度 `O(1)`。
+
+### 2. 为什么 Two Sum 要用哈希表
+暴力法要双重循环，时间 `O(n^2)`。  
+哈希表法可以边遍历边查找“补数”（`need = target - x`），时间降为 `O(n)`。
+
+### 3. Two Sum 哈希法模板
+```python
+def twoSum(nums, target):
+    mp = {}  # 值 -> 下标
+    for i, x in enumerate(nums):
+        need = target - x
+        if need in mp:
+            return [mp[need], i]
+        mp[x] = i
+```
+
+### 4. 一句话记忆
+哈希表 = 用空间换时间，把“查找某值”从 `O(n)` 降到平均 `O(1)`。
+
+### 5. Two Sum 字典方向（易错点）
+在本题常用写法里：
+```python
+mp[x] = i
+```
+表示：
+1. `key` 是数值 `x`
+2. `value` 是下标 `i`
+
+因此：
+1. `mp[need]` 取到的是“need 对应的下标”
+2. `mp[i]` 不代表“按下标取值”，除非 `i` 正好是某个 key
+3. 字典默认是 `key -> value` 单向查询，不能自动 `value -> key`
+
+### E. `enumerate` 速记（刷题高频）
+
+### 1. 是什么
+`enumerate` 可以在遍历序列时，同时拿到“下标”和“元素值”。
+
+### 2. 基本写法
+```python
+for i, x in enumerate(nums):
+    ...
+```
+其中：
+1. `i` 是下标
+2. `x` 是当前元素值
+
+### 3. 和 `range(len(nums))` 的关系
+下面两段逻辑等价：
+```python
+for i, x in enumerate(nums):
+    ...
+```
+```python
+for i in range(len(nums)):
+    x = nums[i]
+    ...
+```
+`enumerate` 写法更简洁、更不容易写错。
+
+### 4. `start` 参数
+```python
+for idx, x in enumerate(nums, start=1):
+    ...
+```
+下标会从 1 开始（默认从 0）。
+
+### F. 首次提交代码复盘（完整）
+
+### 1. 当时提交（错误版）
+```python
+for i, x in enumerate(nums):
+    need = target - x
+        if need in nums:
+            return [nums[need], i]
+```
+
+### 2. 三个核心错误
+1. 缩进错误：`if` 比 `need = ...` 多缩进一层，Python 会报缩进异常。
+2. 容器用错：`if need in nums` 在列表里查值，和后续字典取值逻辑不一致。
+3. 取值语义错：`nums[need]` 把 `need` 当下标，实际 `need` 是数值，不是下标。
+
+### 3. 缩进规则（必须记牢）
+1. `if / for / while / def / class / try` 后面必须缩进代码块。
+2. 同一层逻辑缩进量必须一致（建议固定 4 空格）。
+3. 子代码块比父代码块多一层缩进。
+
+### 4. `mp = {}` / `[]` / `set()` 的含义
+1. `{}`：空字典（哈希表）。
+2. `[]`：空列表。
+3. `set()`：空集合（注意：`{}` 不是空集合）。
+
+### 5. 为什么 `mp[x] = i` 要放在最后
+正确顺序是“先查补数，再存当前值”：
+```python
+for i, x in enumerate(nums):
+    need = target - x
+    if need in mp:
+        return [mp[need], i]
+    mp[x] = i
+```
+原因：避免把当前元素和自己配对，保证用到的是“之前见过的元素”。
+
+### 6. 流程示例（`nums=[2,7,11,15], target=9`）
+按“先查补数，再存当前值”走：
+1. `i=0, x=2`，`need=7`，`7` 不在 `mp`，存入 `mp[2]=0`
+2. `i=1, x=7`，`need=2`，`2` 在 `mp`，返回 `[mp[2], 1] = [0,1]`
+3. 立即结束，答案正确
+
+备注：
+1. 这个例子里“先存后查”也可能凑巧得到正确结果。
+2. 但标准写法仍建议“先查后存”，逻辑更稳、能规避同元素配对风险。
+
+### 7. 为什么 key 用数值、value 用下标
+在 Two Sum 里我们查的是“补数是否出现过”，所以数值要作为 key：
+1. `mp[x] = i`：数值 `x` -> 下标 `i`
+2. `if need in mp`：按补数快速查
+3. `mp[need]`：直接拿补数对应下标
+
+补充：
+1. `mp[need]` 能拿到下标。
+2. `mp[i]` 不一定有意义，除非 `i` 本身是一个 key。
+3. 字典默认只支持 `key -> value`，不能自动 `value -> key`。
+4. `if need in mp` 默认查的是“字典 key”，不是 value。
+5. `if need in nums` 是在列表里查“元素值是否存在”，不是查下标映射。
+
+### 8. 为什么 Two Sum 不直接用 `nums` 做 `in`
+1. `nums` 是列表，`if need in nums` 只能判断“有没有这个值”，平均要线性扫描 `O(n)`。
+2. 列表查到值后还需要再找下标，逻辑更绕、复杂度更高。
+3. `mp`（字典）能同时做到：
+   - `if need in mp`：平均 `O(1)` 查补数
+   - `mp[need]`：直接拿到补数对应下标
+4. 所以 Two Sum 标准解用哈希表，而不是直接用列表做成员判断。
+
+---
+
+## 2、存在重复元素（217）
+
+### A. 题目核心
+给定数组 `nums`，只判断“是否有重复值”：
+1. 有重复 -> `True`
+2. 全不重复 -> `False`
+
+这题不需要返回下标，也不需要保序。
+
+### B. 集合（set）是什么
+集合是“不重复、无顺序”的容器，最适合做：
+1. 判重
+2. 快速成员查询
+
+常用语法：
+```python
+seen = set()     # 空集合（注意不是 {}）
+seen.add(3)      # 加元素
+3 in seen        # 查是否存在
+```
+
+### C. set 和 list 的区别（高频）
+1. 重复性：
+   - `list` 允许重复
+   - `set` 自动去重
+2. 顺序性：
+   - `list` 有顺序，可按下标访问
+   - `set` 无固定顺序，不能按下标访问
+3. 查询复杂度（平均）：
+   - `x in list` -> `O(n)`
+   - `x in set` -> `O(1)`
+
+### D. 为什么 217 推荐 set 而不是 list
+1. 217 只关心“出现过没”，不关心位置。
+2. 用 `set` 查重更快，整体 `O(n)`。
+3. 如果用 `list` 做 `in`，每次都要线性查找，最坏 `O(n^2)`。
+
+### E. 217 标准模板
+```python
+def containsDuplicate(nums):
+    seen = set()
+    for x in nums:
+        if x in seen:
+            return True
+        seen.add(x)
+    return False
+```
+
+### F. 易错点
+1. 空集合是 `set()`，不是 `{}`（`{}` 是空字典）。
+2. `set` 不能按下标取值（如 `seen[0]` 会报错）。
+3. 这题用 `dict` 也能做，但 `set` 更简洁。
+4. `for x in nums` 遍历的是列表元素值，不存在 key/value 概念。
+5. `for i, x in enumerate(nums)` 是“下标 + 元素值”二元组解包，也不是 key/value。
+6. key/value 只属于字典：
+   - `for k in d` 默认遍历 key
+   - `for k, v in d.items()` 同时拿 key 和 value
+7. `enumerate` 不是“只能用于元组”；它用于可迭代对象（如 list/tuple/string），每轮返回 `(下标, 值)` 元组。

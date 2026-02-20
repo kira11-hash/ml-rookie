@@ -1311,3 +1311,296 @@ git log --oneline -n 3
 
 你先建立“我会提交一次本地版本”的肌肉记忆即可。  
 GitHub 远程仓库可以晚一点再接。
+
+---
+
+## 11. Day6 讲义：DataLoader / mini-batch / 训练循环进阶
+
+## 11.1 Day6 目标
+Day6 的定位：
+1. 不是上大模型
+2. 不是刷新框架
+3. 是把 Day5 的“整批训练”升级为“按小批次训练”
+
+你今天要吃透这 4 个词：
+1. `dataset`（数据集）
+2. `loader`（按批次喂数据）
+3. `batch`（一小批样本）
+4. `epoch`（把整个数据集完整看一遍）
+
+---
+
+## 11.2 三个概念一次讲清
+
+### 11.2.1 样本（sample）
+一条训练数据，比如：
+- 输入 `x=6`
+- 标签 `y=16`
+
+### 11.2.2 批次（batch）
+一次不喂全部数据，而是喂一小块，比如 16 条。
+
+好处：
+1. 显存/内存压力更小
+2. 更新更频繁
+3. 是深度学习标准训练方式
+
+### 11.2.3 轮次（epoch）
+把整个训练集都走完 1 次，叫 1 个 epoch。
+
+举例：
+- 数据总数 = 100
+- `batch_size=16`
+- 1 个 epoch 约有 `ceil(100/16)=7` 次参数更新
+
+---
+
+## 11.3 DataLoader 是干嘛的
+
+`DataLoader` 负责：
+1. 把数据切成 batch
+2. 每次循环给你 `xb, yb`
+3. 可选打乱顺序（`shuffle=True`）
+
+标准写法：
+```python
+from torch.utils.data import TensorDataset, DataLoader
+
+dataset = TensorDataset(x, y)
+loader = DataLoader(dataset, batch_size=16, shuffle=True)
+```
+
+解释：
+1. `TensorDataset(x, y)`：把输入和标签绑成一对一数据集
+2. `batch_size=16`：每次给 16 条
+3. `shuffle=True`：每个 epoch 开始前打乱顺序，减少“记住顺序”的风险
+
+---
+
+## 11.4 `for xb, yb in loader` 到底是什么意思
+
+这句是 Day6 核心语法：
+```python
+for xb, yb in loader:
+    ...
+```
+
+含义：
+1. `loader` 每次产出一个 batch
+2. 这个 batch 里有两份张量：
+   - `xb`：这批输入
+   - `yb`：这批标签
+3. 你拿到这两个张量后做前向、算 loss、反向传播
+
+注意：
+1. `xb` / `yb` 变量名不是固定的，你叫 `batch_x` / `batch_y` 也行
+2. 这是“解包”语法，因为 loader 每次返回的是二元结构 `(inputs, labels)`
+
+---
+
+## 11.5 Day6 最小训练循环（按 batch）
+
+```python
+for epoch in range(epochs):
+    for xb, yb in loader:
+        xb = xb.to(device)
+        yb = yb.to(device)
+
+        pred = model(xb)
+        loss = loss_fn(pred, yb)
+
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+```
+
+逻辑顺序：
+1. 外层 epoch：控制训练总轮数
+2. 内层 batch：每轮里分批喂数据
+3. `to(device)`：保证“模型和数据在同设备”
+4. 三件套：`zero_grad -> backward -> step`
+
+---
+
+## 11.6 Day6 常见错误
+
+1. 忘了把 `xb/yb` 移到 device
+报错常见为设备不一致。
+
+2. 把 `batch_size` 写太大
+初学阶段会导致速度慢或内存压力大。
+
+3. 在内层循环外才 `zero_grad()`
+会导致梯度累积污染。
+
+4. 误以为 `shuffle=True` 会改变标签对应关系
+不会。`x` 和 `y` 是一对一同步打乱。
+
+5. 看到 `for xb, yb in loader` 就懵
+记住：这是“每次拿一批输入和一批标签”。
+
+---
+
+## 11.7 Day6 验收标准（执行版）
+
+1. `everyday_learning/day6/day6_handwrite.py` 断言全部通过
+2. 你能口述：`sample/batch/epoch` 区别
+3. 你能解释：为什么 `shuffle=True` 常常更稳
+4. 你能解释：为什么 batch 训练仍然是 `O(n)` 级遍历数据
+5. 你能说明：Day5（整批）和 Day6（小批）训练循环区别
+
+---
+
+## 11.8 Day6 和 LeetCode 的关系
+
+Day6 安排建议：
+1. 先做 Day6 手写（ML 主线）
+2. 再做 LeetCode 1 题（算法手感）
+
+这样不会只刷题，也不会让 ML 主线断掉。
+
+---
+
+## 12. Day6（Week1 启动）讲义：MNIST baseline（MLP）
+
+> 执行以本章节为准：Day6 要做的是“第一个完整分类任务”，不是再做线性回归。
+
+## 12.1 Day6 目标（你这次要交付什么）
+1. 跑通 MNIST 训练脚本（`mps` 优先，失败回退 `cpu`）
+2. baseline 模型：1 个简单 MLP（`Flatten -> Linear -> ReLU -> Linear`）
+3. 阶段目标：
+   - Phase1：测试集准确率 `> 92%`
+   - Phase2：测试集准确率 `> 95%`
+4. 记录 3 个数字：`final loss`、`test acc`、`训练耗时`
+5. 当天只做 1 题 LeetCode（不超载）
+
+---
+
+## 12.2 MNIST 是什么
+MNIST 是手写数字数据集（0-9）：
+1. 训练集 60000 张图
+2. 测试集 10000 张图
+3. 每张图大小 `28x28`，灰度图
+
+为什么它适合作为第一站：
+1. 小而标准
+2. 模型容易收敛
+3. 你能快速感受到“训练-评估-迭代”的闭环
+
+---
+
+## 12.3 这次数据流（必须记住）
+
+完整流程：
+1. `datasets.MNIST(...)` 下载并读取数据
+2. `transforms.ToTensor()` 把图像转成张量（值归一到 [0,1]）
+3. `DataLoader` 分 batch 喂给模型
+4. 模型前向得到 `logits`
+5. `CrossEntropyLoss` 计算分类损失
+6. 反向传播更新参数
+7. 用测试集算准确率
+
+---
+
+## 12.4 baseline MLP 结构
+
+```python
+nn.Sequential(
+    nn.Flatten(),
+    nn.Linear(28 * 28, 128),
+    nn.ReLU(),
+    nn.Linear(128, 10),
+)
+```
+
+解释：
+1. `Flatten`：把 `1x28x28` 拉平成 `784`
+2. 第一层全连接：`784 -> 128`
+3. 激活函数 `ReLU`
+4. 输出层：`128 -> 10`（对应 0~9 共 10 类）
+
+`10` 不是概率，而是 10 个类别分数（logits）。
+
+---
+
+## 12.5 为什么分类用 CrossEntropyLoss
+`CrossEntropyLoss` 适配“多分类 + logits 输出”的场景。
+
+你只需记住：
+1. 输入：模型输出 logits（不需要先 softmax）
+2. 标签：类别整数（0~9）
+3. 作用：鼓励正确类别分数更高
+
+---
+
+## 12.6 准确率怎么算
+
+```python
+pred_label = logits.argmax(dim=1)
+correct += (pred_label == yb).sum().item()
+acc = 100.0 * correct / total
+```
+
+含义：
+1. `argmax(dim=1)` 取每行最大值下标（预测类别）
+2. 和真实标签逐个比较
+3. 正确数 / 总数 = 准确率
+
+---
+
+## 12.7 两阶段目标怎么跑
+
+Phase1（先达标）：
+1. 训练 1 个 epoch
+2. 测试集评估，先看是否 `> 92%`
+
+Phase2（再冲刺）：
+1. 在同一模型上继续训练 1 个 epoch
+2. 再评估，目标 `> 95%`
+
+这就是你说的“先 baseline，再拉高指标”。
+
+---
+
+## 12.8 MPS 优先、失败回 CPU
+
+推荐逻辑：
+1. 默认 `device = mps`
+2. 若 MPS 训练报 RuntimeError，则自动 fallback 到 CPU
+
+这能保证“今天一定能跑完”，不因设备问题卡死。
+
+---
+
+## 12.9 Day6 最小验收标准（执行版）
+1. `everyday_learning/day6/day6_handwrite.py` 断言通过
+2. 你能说清 `final loss / phase1 acc / phase2 acc / elapsed sec` 各自含义
+3. 能解释：为什么 `argmax(dim=1)` 就是分类预测
+4. 能解释：为什么这次是分类任务，不再用 MSELoss
+
+---
+
+## 12.10 Day6 常见报错
+1. `ModuleNotFoundError: No module named 'torchvision'`
+   - 解决：`/usr/bin/python3 -m pip install torchvision`
+2. 设备不一致报错
+   - 解决：`xb/yb/model` 都要在同一 device
+3. 精度不达标
+   - 先检查训练循环顺序是否正确
+   - 再检查是否真的训练了 2 个阶段
+4. 速度慢
+   - CPU 慢是正常的，先跑通再优化
+
+---
+
+## 12.11 Day6 命令（你明天直接跑）
+
+手写版：
+```bash
+/usr/bin/python3 "/Users/chenqingan/Library/Mobile Documents/com~apple~CloudDocs/ml-rookie/everyday_learning/day6/day6_handwrite.py"
+```
+
+参考解：
+```bash
+/usr/bin/python3 "/Users/chenqingan/Library/Mobile Documents/com~apple~CloudDocs/ml-rookie/everyday_learning/day6/day6_solution.py"
+```
