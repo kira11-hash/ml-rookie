@@ -28,6 +28,15 @@ class Solution:
         #   - 如果 s == target: 返回 [l+1, r+1]（注意题目是 1-based）
         #   - 如果 s < target: l += 1
         #   - 如果 s > target: r -= 1
-
+        l=0
+        r=len(numbers)-1
+        while l<r:
+            s = numbers[l] + numbers[r]
+            if s == target:
+                return [l + 1, r + 1]
+            elif s < target:
+                 l += 1
+            else:
+                 r -= 1
         # TODO 3: 理论上题目保证有解，这里仅做兜底
         return []

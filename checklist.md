@@ -1,23 +1,18 @@
 # Checklist（今天）
 
-> 日期基准：2026-02-20（今天）
+> 日期基准：2026-02-21（今天）
 
-## 1. 今日主线任务（按顺序执行）
-- [✅] 阅读 Day4 讲义（`python_grammar.md` Day4 章节，15-20 分钟）
-- [✅ ] 完成 `everyday_learning/day4/day4_handwrite.py` 的 TODO（45-70 分钟）
-- [✅ ] 运行并通过 Day4 断言  
-      `/usr/bin/python3 "/Users/chenqingan/Library/Mobile Documents/com~apple~CloudDocs/ml-rookie/everyday_learning/day4/day4_handwrite.py"`
-- [✅] 故意制造 1 个 Day4 报错并修复（10 分钟）
-- [✅] 填写 Day4 log（`ml_learning_log.md`）
-- [✅ ] 阅读 Day5 讲义（`python_grammar.md` Day5 章节，15-20 分钟）
-- [✅] 运行 Day5 环境检查  
-      `/usr/bin/python3 "/Users/chenqingan/Library/Mobile Documents/com~apple~CloudDocs/ml-rookie/everyday_learning/day5/day5_env_check.py"`
-- [✅] 完成 `everyday_learning/day5/day5_handwrite.py` 的 TODO（45-70 分钟）
-- [✅] 运行并通过 Day5 断言  
-      `/usr/bin/python3 "/Users/chenqingan/Library/Mobile Documents/com~apple~CloudDocs/ml-rookie/everyday_learning/day5/day5_handwrite.py"`
-- [] LeetCode 两题：`1. Two Sum`、`283. Move Zeroes`
-- [ ] 填写 Day5 log（`ml_learning_log.md`）
-- [ ] 一次提交到 GitHub：`git add . && git commit -m "complete day4 day5 + lc" && git push`
+## 1. 2.21 主线任务（按顺序执行）
+- [ ] 阅读 `python_grammar.md` 的 Day6（Week1 启动）章节（20-30 分钟）
+- [ ] 运行 Day6 环境检查  
+      `/usr/bin/python3 "/Users/chenqingan/Library/Mobile Documents/com~apple~CloudDocs/ml-rookie/everyday_learning/day6/day6_env_check.py"`
+- [ ] 完成 `everyday_learning/day6/day6_handwrite.py` 的全部 TODO（90-150 分钟）
+- [ ] 运行 Day6 手写脚本并通过断言  
+      `/usr/bin/python3 "/Users/chenqingan/Library/Mobile Documents/com~apple~CloudDocs/ml-rookie/everyday_learning/day6/day6_handwrite.py"`
+- [ ] 记录 4 个指标到 log：`final loss`、`phase1 test acc`、`phase2 test acc`、`elapsed sec`
+- [ ] 达标验收：`phase1 >= 92%` 且 `phase2 >= 95%`
+- [ ] 更新 `ml_learning_log.md`（完成 Day6 模板）
+- [ ] 若还有精力，收尾一次 Git 提交：`git add . && git commit -m "complete day6 mnist check" && git push`
 
 ---
 
