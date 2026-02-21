@@ -7,17 +7,17 @@
 - [1] 读讲义过程中，把不懂点实时记下来并问我（至少问清再继续写）
 - [1] 运行 Day6 环境检查  
       `/usr/bin/python3 "/Users/chenqingan/Library/Mobile Documents/com~apple~CloudDocs/ml-rookie/everyday_learning/day6/day6_env_check.py"`
-- [ ] 完成 `everyday_learning/day6/day6_handwrite.py` 全部 TODO
-- [ ] 跑通 Day6 手写脚本并通过断言  
+- [1] 完成 `everyday_learning/day6/day6_handwrite.py` 全部 TODO
+- [1] 跑通 Day6 手写脚本并通过断言  
       `/usr/bin/python3 "/Users/chenqingan/Library/Mobile Documents/com~apple~CloudDocs/ml-rookie/everyday_learning/day6/day6_handwrite.py"`
-- [ ] 达标验收：`phase1 >= 92%` 且 `phase2 >= 95%`
-- [ ] 记录 Day6 指标到 log：`final loss`、`phase1 test acc`、`phase2 test acc`、`elapsed sec`
+- [1] 达标验收：`phase1 >= 92%` 且 `phase2 >= 95%`
+- [1] 记录 Day6 指标到 log：`final loss`、`phase1 test acc`、`phase2 test acc`、`elapsed sec`
 - [ ] 刷 1 道 LeetCode（Python3）
 - [ ] 复习 `my_leetcode_learning/wrongbook.md`（至少过 1/217/167 三块）
-- [ ] 复盘 Day6 手写文件（闭卷口述训练流程 + 再看一遍关键函数）
+- [ ] 复盘 Day1-6 手写文件（闭卷口述训练流程 + 再看一遍关键函数）
 - [ ] 更新 `ml_learning_log.md`（Day6 模板完整填写）
 - [ ] （可选）收尾提交：`git add . && git commit -m "complete day6 full day run" && git push`
-- [ ] Day7 启动预告：若今天全部完成，明天直接开王树森课程 + 天池 ItemCF 主线
+- [1] Day7 启动预告：若今天全部完成，明天直接开王树森课程 + 天池 ItemCF 主线
 
 ---
 

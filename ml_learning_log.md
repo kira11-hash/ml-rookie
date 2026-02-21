@@ -593,44 +593,94 @@
 ## 2026-02-21（Day6：MNIST 验收日）
 
 ### 今日计划
-- [ ] 只做 MNIST 验收（不并行新任务）
-- [ ] 运行环境检查：`everyday_learning/day6/day6_env_check.py`
-- [ ] 完成 `everyday_learning/day6/day6_handwrite.py`
-- [ ] 记录四个指标：`final loss`、`phase1 acc`、`phase2 acc`、`elapsed sec`
-- [ ] 达标：`phase1 >= 92%`，`phase2 >= 95%`
+- [x] 只做 MNIST 验收（不并行新任务）
+- [x] 运行并验证 Day6 训练脚本
+- [x] 完成 `everyday_learning/day6/day6_handwrite.py`
+- [x] 记录四个指标：`final loss`、`phase1 acc`、`phase2 acc`、`elapsed sec`
+- [x] 达标：`phase1 >= 92%`，`phase2 >= 95%`
 
-### 今日产出（完成后填写）
-- device used：
-- final loss：
-- phase1 test acc（%）：
-- phase2 test acc（%）：
-- elapsed sec：
-- 是否通过断言：
+### 今日产出
+- device used：`mps`
+- final loss：`0.1933884722709656`
+- phase1 test acc（%）：`93.43`
+- phase2 test acc（%）：`95.36`
+- elapsed sec：`4.7286818749999995`
+- 是否通过断言：`是（通过）`
 
-### 今日报错与修复（完成后填写）
-1. 报错信息：
-   - 原因定位：
-   - 修复动作：
-   - 复盘：
-2. 报错信息：
-   - 原因定位：
-   - 修复动作：
-   - 复盘：
+### 今日报错与修复（Day6）
+1. 报错信息：`UnboundLocalError: local variable 'transform' referenced before assignment`
+   - 原因定位：写成了 `transform = transform.ToTensor`，右侧错误引用了同名局部变量。
+   - 修复动作：改为 `transform = transforms.ToTensor()`。
+   - 复盘：`ToTensor` 是可调用对象，且这里必须用模块名 `transforms`。
+
+2. 报错信息：`TypeError: __init__() takes 1 positional argument but 2 were given`
+   - 原因定位：把 `transforms.ToTensor`（类/构造器）直接传给数据集，没有实例化。
+   - 修复动作：补 `()`，即 `transforms.ToTensor()`。
+   - 复盘：`transform` 参数需要的是“可调用实例”，不是类本体。
+
+3. 报错信息：`RuntimeError: Tensor for argument input is on cpu but expected on mps`
+   - 原因定位：`evaluate_acc` 中 `xb/yb` 未 `.to(device)`，模型在 MPS、数据在 CPU。
+   - 修复动作：在评估循环中补齐 `xb = xb.to(device)`、`yb = yb.to(device)`。
+   - 复盘：训练与评估都必须保证“模型和数据同设备”。
+
+4. 报错信息：`AttributeError: 'builtin_function_or_method' object has no attribute 'item'`
+   - 原因定位：写成了 `.sum.item()`，拿到的是方法对象而不是执行结果。
+   - 修复动作：改为 `.sum().item()`。
+   - 复盘：凡是方法都要加 `()` 才会执行（`.sum` vs `.sum()`）。
 
 ### 今日提问与答案（Day6，一一对应）
-1. 问：
-   答：
-2. 问：
-   答：
-3. 问：
-   答：
+1. 问：`train_one_epoch` 里为什么没有 `for epoch in ...`？  
+   答：该函数职责是“只训练一个 epoch”；外层 `for epoch in range(...)` 在 `train_pipeline` 控制。
+
+2. 问：`bs = xb.size(0)`、`total_loss += loss.item()*bs`、`total_count += bs` 三行什么意思？  
+   答：是在做“按样本数加权的 epoch 平均 loss”，避免最后一个 batch 大小不同导致失真。
+
+3. 问：为什么函数里没定义 batch 大小却能一批一批训练？  
+   答：batch 大小在 `DataLoader(..., batch_size=...)` 里定义；函数只从 `train_loader` 取批次。
+
+4. 问：`logits` 是什么？  
+   答：模型对每个类别的原始分数（未 softmax），`CrossEntropyLoss` 直接吃 logits。
+
+5. 问：`argmax(dim=1)` 里的 `dim=1` 是什么？  
+   答：在 `[batch_size, num_classes]` 里按“类别维”取最大值下标，得到预测类别。
+
+6. 问：`numel()` 是干什么的？  
+   答：返回张量元素总数（number of elements），常用于统计样本个数或参数量。
+
+7. 问：`Adam` 和 `model.parameters()` 分别是什么？  
+   答：`Adam` 是参数更新优化器；`model.parameters()` 提供模型所有可训练参数给优化器管理。
+
+8. 问：`for _ in range(...)` 里的 `_` 是什么意思？  
+   答：占位变量，表示“循环变量本身不需要使用”。
+
+9. 问：为什么 `phase1_acc = evaluate_acc(...)` 在 `for` 外面？  
+   答：当前设计是“先训练若干轮，再统一评估一次”，不是每轮都评估。
+
+10. 问：`final_loss` 和 `acc` 没有直接计算关系吗？  
+    答：对，代码上无直接依赖；但工程上两者一起看可判断训练是否健康（优化/泛化）。
+
+11. 问：`datasets.MNIST(..., root/download/transform)` 各参数是什么意思？  
+    答：`root` 指数据目录，`download=True` 自动下载缺失数据，`transform` 定义取样时预处理规则。
+
+12. 问：`Path(__file__).resolve().parent` 和 `time.perf_counter()` 各在干什么？  
+    答：前者用于稳定定位脚本目录并构造路径；后者两次差值用于精确测训练耗时。
+
+13. 问：`transforms.ToTensor()` 做了什么？  
+    答：把图像转为 Tensor，常见图像维度从 `HWC` 转 `CHW`，并把像素从 `0~255` 归一到 `0~1`。
+
+### 今日 Day6 总结
+- 结果：MNIST baseline 跑通并达标（`phase1 93.43%`，`phase2 95.36%`）。
+- 技术收获：打通了 Day6 的完整闭环（数据 -> 训练 -> 评估 -> 指标 -> 断言通过）。
+- 主要进步：能独立定位“设备不一致”和“方法对象/方法调用”两类高频报错。
+- 后续重点：继续巩固 `DataLoader`、`evaluate_acc`、`loss累计逻辑` 三个最容易混的点。
 
 ### Day6 自检
-- 我能解释 `DataLoader` 的作用：
-- 我能解释 `train()` 和 `eval()` 的区别：
-- 我能解释 `argmax(dim=1)` 为什么可用于分类预测：
-- 我能解释 `CrossEntropyLoss` 的输入输出要求：
-- 我能口述完整训练流程：
+- 我能解释 `DataLoader` 的作用：`是`
+- 我能解释 `train()` 和 `eval()` 的区别：`是`
+- 我能解释 `argmax(dim=1)` 为什么可用于分类预测：`是`
+- 我能解释 `CrossEntropyLoss` 的输入输出要求：`是`
+- 我能口述完整训练流程：`是`
+- 今日自评（1-10）：`6`
 
 ### 明日计划（2026-02-22，复习日）
 - 复习 Day1-Day5 + Day6 核心知识，不上新任务。

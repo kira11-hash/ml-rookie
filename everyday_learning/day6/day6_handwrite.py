@@ -31,10 +31,11 @@ def get_device(prefer_mps=True):
     - prefer_mps=True 且 MPS 可用 -> torch.device("mps")
     - 否则 -> torch.device("cpu")
     """
-    if torch.backends.mps.is_available():
+    if prefer_mps and torch.backends.mps.is_available():
         device=torch.device("mps")
     else:
         device = torch.device("cpu")
+    return device
 
 def build_loaders(data_dir, train_batch_size=128, test_batch_size=512):
     """
@@ -46,8 +47,15 @@ def build_loaders(data_dir, train_batch_size=128, test_batch_size=512):
        - test: shuffle=False
     4) return train_loader, test_loader
     """
-    pass
+    transform = transforms.ToTensor()
 
+    train_ds = datasets.MNIST(root=str(data_dir),train=True,transform=transform,download=True)
+    test_ds=datasets.MNIST(root=str(data_dir),train=False,transform=transform,download=True)
+
+    train_loader=DataLoader(train_ds,batch_size=train_batch_size,shuffle=True)
+    test_loader=DataLoader(test_ds,batch_size=test_batch_size,shuffle=False)
+
+    return train_loader,test_loader
 
 def build_model(device):
     """
@@ -61,7 +69,13 @@ def build_model(device):
     )
     并放到 device 上
     """
-    pass
+    model=nn.Sequential(
+        nn.Flatten(),
+        nn.Linear(28*28,128),
+        nn.ReLU(),
+        nn.Linear(128,10),
+    )
+    return model.to(device)
 
 
 def train_one_epoch(model, train_loader, optimizer, loss_fn, device):
@@ -77,7 +91,26 @@ def train_one_epoch(model, train_loader, optimizer, loss_fn, device):
        - optimizer.step()
     3) 返回该 epoch 的平均 loss（float）
     """
-    pass
+    model.train()
+    total_loss=0
+    total_count=0
+
+    for xb,yb in train_loader:
+        xb=xb.to(device)
+        yb=yb.to(device)
+
+        logits=model(xb)
+        loss=loss_fn(logits,yb)
+
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        bs=xb.size(0)
+        total_loss += float(loss.item())*bs
+        total_count += bs
+
+    return total_loss/max(total_count,1)
 
 
 def evaluate_acc(model, test_loader, device):
@@ -90,7 +123,22 @@ def evaluate_acc(model, test_loader, device):
        - 统计 correct / total
     3) 返回准确率（百分比 float，例如 96.35）
     """
-    pass
+    model.eval()
+    correct = 0
+    total = 0
+
+    for xb,yb in test_loader:
+        xb= xb.to(device)
+        yb= yb.to(device)
+
+        with torch.no_grad():
+
+            logits=model(xb)
+            pred_label = logits.argmax(dim=1)
+            correct += (pred_label==yb).sum().item()
+            total += int(yb.numel())
+
+    return 100.0*correct/max(total,1)
 
 
 def train_pipeline(device, data_dir, phase1_epochs=1, phase2_epochs=1, lr=1e-3):
@@ -109,7 +157,31 @@ def train_pipeline(device, data_dir, phase1_epochs=1, phase2_epochs=1, lr=1e-3):
          "elapsed_sec": ...,
        }
     """
-    pass
+    train_loader, test_loader = build_loaders(data_dir)
+    model = build_model(device)
+    loss_fn = nn.CrossEntropyLoss()
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+
+    start = time.perf_counter()
+    final_loss = None
+
+    for _ in range(phase1_epochs):
+        final_loss = train_one_epoch(model, train_loader, optimizer, loss_fn, device)
+    phase1_acc = evaluate_acc(model, test_loader, device)
+
+    for _ in range(phase2_epochs):
+        final_loss = train_one_epoch(model, train_loader, optimizer, loss_fn, device)
+    phase2_acc = evaluate_acc(model, test_loader, device)
+
+    elapsed = time.perf_counter() - start
+
+    return {
+        "device": device.type,
+        "final_loss": float(final_loss),
+        "phase1_acc": float(phase1_acc),
+        "phase2_acc": float(phase2_acc),
+        "elapsed_sec": float(elapsed),
+    }
 
 
 def main():
