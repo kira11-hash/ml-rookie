@@ -2,17 +2,22 @@
 
 > 日期基准：2026-02-21（今天）
 
-## 1. 2.21 主线任务（按顺序执行）
-- [ ] 阅读 `python_grammar.md` 的 Day6（Week1 启动）章节（20-30 分钟）
-- [ ] 运行 Day6 环境检查  
+## 1. 2.21 全日主线（Day6 一天打穿）
+- [1] 从头通读 `python_grammar.md`（重点 Day4/Day5/Day6：`##9`、`##10`、`##11`、`##12`）
+- [1] 读讲义过程中，把不懂点实时记下来并问我（至少问清再继续写）
+- [1] 运行 Day6 环境检查  
       `/usr/bin/python3 "/Users/chenqingan/Library/Mobile Documents/com~apple~CloudDocs/ml-rookie/everyday_learning/day6/day6_env_check.py"`
-- [ ] 完成 `everyday_learning/day6/day6_handwrite.py` 的全部 TODO（90-150 分钟）
-- [ ] 运行 Day6 手写脚本并通过断言  
+- [ ] 完成 `everyday_learning/day6/day6_handwrite.py` 全部 TODO
+- [ ] 跑通 Day6 手写脚本并通过断言  
       `/usr/bin/python3 "/Users/chenqingan/Library/Mobile Documents/com~apple~CloudDocs/ml-rookie/everyday_learning/day6/day6_handwrite.py"`
-- [ ] 记录 4 个指标到 log：`final loss`、`phase1 test acc`、`phase2 test acc`、`elapsed sec`
 - [ ] 达标验收：`phase1 >= 92%` 且 `phase2 >= 95%`
-- [ ] 更新 `ml_learning_log.md`（完成 Day6 模板）
-- [ ] 若还有精力，收尾一次 Git 提交：`git add . && git commit -m "complete day6 mnist check" && git push`
+- [ ] 记录 Day6 指标到 log：`final loss`、`phase1 test acc`、`phase2 test acc`、`elapsed sec`
+- [ ] 刷 1 道 LeetCode（Python3）
+- [ ] 复习 `my_leetcode_learning/wrongbook.md`（至少过 1/217/167 三块）
+- [ ] 复盘 Day6 手写文件（闭卷口述训练流程 + 再看一遍关键函数）
+- [ ] 更新 `ml_learning_log.md`（Day6 模板完整填写）
+- [ ] （可选）收尾提交：`git add . && git commit -m "complete day6 full day run" && git push`
+- [ ] Day7 启动预告：若今天全部完成，明天直接开王树森课程 + 天池 ItemCF 主线
 
 ---
 

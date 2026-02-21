@@ -31,8 +31,10 @@ def get_device(prefer_mps=True):
     - prefer_mps=True 且 MPS 可用 -> torch.device("mps")
     - 否则 -> torch.device("cpu")
     """
-    pass
-
+    if torch.backends.mps.is_available():
+        device=torch.device("mps")
+    else:
+        device = torch.device("cpu")
 
 def build_loaders(data_dir, train_batch_size=128, test_batch_size=512):
     """

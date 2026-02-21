@@ -1,7 +1,26 @@
 # Python 语法讲义（超详细版，纯讲义）
 
-> 适用对象：零基础（会一点 Matlab/Mathematica 也算零基础起步）  
+> 适用对象：零基础  
 > 讲义目标：让你在 Day1/Day2 不靠死记硬背，真正理解并能手写通过
+
+---
+
+## 目录与使用路线（新版）
+
+按“当天任务”只看对应章节，避免信息过载：
+1. Day1：看 `##2`
+2. Day2：看 `##3`
+3. Day3：看 `##8`
+4. Day4：看 `##9`
+5. Day5：看 `##10`
+6. Day6（基础语法）：先看 `##11`
+7. Day6（完整MNIST任务）：再看 `##12`
+
+本讲义统一格式：
+1. 先讲概念
+2. 再讲语法
+3. 再给例子
+4. 最后给 TODO 对照和常见误区
 
 ---
 
@@ -51,6 +70,10 @@ height = 1.75
 ```
 想让 Python 把它当“值本身”，就用该类型的字面量语法。
 字符串的字面量语法就是加引号。
+
+不加引号时，Qingan 会被当成变量名。
+这个变量通常没定义，会报 NameError。
+字符串字面量必须加引号（单引号或双引号都行）
 
 上面三行含义：
 1. `name` 存了字符串 `"Qingan"`。
@@ -108,6 +131,74 @@ print(f"分数是 {score}")            # f-string，推荐
 
 ```
 
+这三种写法都能打印结果，但语法逻辑不同：
+1. `print("分数:", 95)`：
+   - `print` 接受多个参数。
+   - 参数之间自动加空格。
+2. `print("分数是 " + str(95))`：
+   - `+` 在这里表示字符串拼接。
+   - 左右两边都必须是字符串，所以要先 `str(95)`。
+3. `print(f"分数是 {score}")`：
+   - `f` 是 format（格式化）的意思。
+   - 花括号 `{}` 内可直接放变量或表达式，最推荐。
+
+f-string 常见写法：
+```python
+name = "Qingan"
+score = 95
+bmi = 21.554
+
+print(f"你好，{name}")
+print(f"分数是 {score}")
+print(f"BMI 保留两位小数：{bmi:.2f}")   # 21.55
+print(f"明年年龄：{22 + 1}")            # 花括号里可写表达式
+```
+
+f-string 常见错误：
+1. 忘记加前缀 `f`，变量不会被替换。
+2. 花括号没配对，会 `SyntaxError`。
+3. 想输出字面量 `{` 或 `}`，要写 `{{` 或 `}}`。
+
+### 2.2.3 `[]`、`()`、`{}` 的异同点
+
+先记最常用含义：
+1. `[]`：列表（list），有序、可重复、可修改。
+2. `()`：元组（tuple）或函数调用参数。
+3. `{}`：字典（dict）或集合（set，非空时）。
+
+例子：
+```python
+# [] -> list
+nums = [3, 1, 2]
+nums.append(4)
+print(nums[0])
+# 下标从 0 开始，所以 nums[0] 是第一个元素（这里是 3）
+
+# () -> tuple
+point = (10, 20)
+# point[0] = 99  # 报错：tuple 不可改
+
+# () -> 函数调用
+print(len(nums))
+
+# {} -> dict
+student = {"name": "Qingan", "age": 22}
+print(student["name"])
+
+# {} -> set（非空）
+seen = {1, 2, 3}
+
+# 空字典 vs 空集合
+empty_dict = {}
+empty_set = set()
+```
+
+快速选择规则：
+1. 存一串会变化的数据：`list`（`[]`）。
+2. 存一组固定值：`tuple`（`()`）。
+3. 做 key-value 映射：`dict`（`{}`）。
+4. 做去重/查存在：`set`（`{...}` 或 `set()`）。
+
 ---
 
 ## 2.3 输入：`input()` 和类型转换
@@ -125,6 +216,11 @@ print(type(x))  # <class 'str'>
 weight = float(input("请输入体重(kg): "))
 height = float(input("请输入身高(m): "))
 ```
+`float(...)` 是 Python 内置函数，作用是“把值转换为浮点数（小数）”。
+1. 语法：`float(x)`
+2. 常见输入：`x` 可以是数字或数字字符串（如 `"66"`、`"1.75"`）
+3. 常见用途：`input()` 返回 `str`，做数值计算前通常先 `float(...)`
+4. 示例：`float("66") -> 66.0`，`float(10) -> 10.0`
 
 ### 2.3.1 常见错误
 ```python
@@ -331,6 +427,30 @@ print(x)               # 95
 print(scores)          # [76, 88, 92]
 ```
 
+### 3.2.3.1 为什么 `.sort` 后面要加 `()`
+核心：`.sort` 是“方法本体”，`.sort()` 才是“执行方法”。
+
+```python
+nums = [3, 1, 2]
+
+print(nums.sort)    # 打印的是方法对象（还没执行）
+nums.sort()         # 现在才真正执行排序
+print(nums)         # [1, 2, 3]
+```
+
+你可以把它理解成：
+1. `nums.sort`：拿到“工具”本身。
+2. `nums.sort()`：按下“工具开关”，开始干活。
+
+同理：
+1. `text.lower` vs `text.lower()`
+2. `f.read` vs `f.read()`
+3. `model.train` vs `model.train()`
+
+什么时候不加 `()`：
+1. 你只是想“把函数/方法传给别人”，先不执行。
+2. 例子：`key=str.lower`（把函数作为参数传入）。
+
 ### 3.2.4 `sort()` 和 `sorted()` 的区别（初学易混）
 1. `scores.sort()`：直接修改原列表，返回 `None`。
 2. `sorted(scores)`：不改原列表，返回新列表。
@@ -530,15 +650,53 @@ print(freq.items())
 # dict_items([('python', 2), ('is', 4), ('ml', 2)])
 ```
 
+补充：`item()` 和 `items()` 是两件不同的事（高频易混）
+1. `items()`（有 s）：
+   - 对象：`dict`
+   - 作用：返回“所有键值对”（`(key, value)`）
+   - 例子：`freq.items()` -> `('python', 2)` 这种对
+2. `item()`（无 s）：
+   - 常见对象：`torch.Tensor`（单元素张量）
+   - 作用：把张量中的单个数取成 Python 普通数值
+   - 例子：`loss.item()` -> `0.1234`
+
+快速记忆：
+1. `item()`：单数，取“一个值”。
+2. `items()`：复数，取“很多键值对”。
+
 排序写法：
 ```python
 sorted_items = sorted(freq.items(), key=lambda x: (-x[1], x[0]))
 ```
 
-解释：
-1. `x` 是一个元组 `(word, count)`。
-2. `x[1]` 是次数，`-x[1]` 表示次数高的排前面。
-3. `x[0]` 是单词，次数相同就按字母序。
+详细拆解（高频重点）：
+1. `sorted(...)` 是 Python 内置排序函数  
+   - 语法：`sorted(iterable, key=..., reverse=...)`
+   - 作用：对可迭代对象排序，返回“新列表”（不改原对象）
+2. `freq.items()` 返回字典的键值对  
+   - 例如：`{"python": 2, "is": 4}` -> `("python", 2)`、`("is", 4)`
+   - 每个元素都是一个二元组：`(key, value)`，在这里就是 `(word, count)`
+3. `key=` 是 `sorted` 的参数名（函数自带）  
+   - 含义：告诉 `sorted`“按什么标准比较”
+   - `sorted` 会把每个元素喂给 `key` 函数，再比较 `key` 的返回值
+4. `lambda x: ...` 是匿名函数  
+   - 语法：`lambda 参数: 返回表达式`
+   - 这里的 `x` 不是预定义变量，而是“当前元素”的临时名字
+5. Python 为什么知道 `x` 是 `(key, value)`  
+   - 因为 `sorted` 在遍历 `freq.items()` 时，每次拿到的元素本来就是二元组
+   - 所以当元素是 `("python", 2)` 时，`x[0]` 就是 `"python"`，`x[1]` 就是 `2`
+6. `(-x[1], x[0])` 是“复合排序键”（元组比较）  
+   - 第一关键字：`-x[1]`（频次降序，次数大的排前面）
+   - 第二关键字：`x[0]`（次数相同按字母升序）
+   - 例子：`("python", 2)` -> 键是 `(-2, "python")`
+
+可读性更强的等价写法（和 lambda 完全等价）：
+```python
+def sort_key(x):
+    return (-x[1], x[0])
+
+sorted_items = sorted(freq.items(), key=sort_key)
+```
 
 取 Top10：
 ```python
@@ -869,6 +1027,21 @@ text = re.sub(r"[^a-z\s]", " ", text)
 
 ---
 
+### 8.4.3 `\s` 和 `\S+` 的区别（正则高频）
+1. `\s`：匹配“一个空白字符”  
+   - 空格、Tab、换行都算空白  
+   - 例子：在 `"a b"` 里，空格能被 `\s` 匹配到
+2. `\S`：匹配“一个非空白字符”  
+   - 字母、数字、符号都可以
+3. `\S+`：匹配“连续 1 个或多个非空白字符”  
+   - `+` 的意思是“前面的模式重复 1 次或多次”  
+   - 例子：在 `"https://abc.com xyz"` 里，`https://abc.com` 会被 `\S+` 一次性匹配
+
+对比记忆：
+1. 小写 `s`（`\s`）看空白  
+2. 大写 `S`（`\S`）看非空白  
+3. 加 `+`（`\S+`）表示“连续一整段”
+
 ## 8.5 clean_text 推荐标准流程（记住这 4 步）
 
 ```python
@@ -911,6 +1084,60 @@ def clean_text(text):
 3. 你能解释 `re.sub` 这两行各在做什么：
    - 去 URL
    - 去非字母字符
+
+---
+
+## 8.8 Day3 手写文件 TODO 对照表（详细）
+
+你写 `day3_handwrite.py` 时，按这个顺序对照：
+1. TODO：转小写
+   - 写法：`text = text.lower()`
+   - 作用：统一词形（`Python` 和 `python` 合并）
+2. TODO：去 URL
+   - 写法：`re.sub(r"https?://\\S+|www\\.\\S+", " ", text)`
+   - 作用：去掉链接，避免污染词频
+3. TODO：去非字母字符
+   - 写法：`re.sub(r"[^a-z\\s]", " ", text)`
+   - 作用：只保留字母和空白
+4. TODO：归一化空白
+   - 写法：`text = " ".join(text.split())`
+   - 作用：把多个空格/Tab/换行折叠成单空格
+5. TODO：返回结果
+   - 写法：`return text`
+
+---
+
+## 8.9 `clean_text` 逐行运行轨迹（带例子）
+
+输入：
+```text
+"Hello!!!  ML\\tis FUN. Visit https://example.com now, 100% sure."
+```
+
+执行过程：
+1. 小写后  
+`"hello!!!  ml\\tis fun. visit https://example.com now, 100% sure."`
+2. 去 URL 后  
+`"hello!!!  ml\\tis fun. visit   now, 100% sure."`
+3. 去非字母字符后  
+`"hello     ml\\tis fun  visit   now    sure "`
+4. 空白归一化后  
+`"hello ml is fun visit now sure"`
+
+最终返回：
+```text
+hello ml is fun visit now sure
+```
+
+---
+
+## 8.10 Day3 常见误区（你容易踩）
+
+1. 忘记 `import re`
+2. 写成 `text = text.lower`（少了 `()`，拿到的是方法对象）
+3. `[^a-z\\s]` 写成 `[^a-z/s]`（把 `\\s` 写错）
+4. 先 `split` 再做正则，导致流程绕、容易错
+5. 把 `re.sub(..., "", text)` 用在所有步骤，导致词粘连
 
 ---
 
@@ -1027,6 +1254,31 @@ except Exception as e:
     print("其他错误:", e)
 ```
 
+补充：`as e` 到底是什么意思（高频）
+1. 完整语法：`except 某异常类型 as 变量名:`
+2. 含义：当异常发生时，把“异常对象”绑定给这个变量名。
+3. `e` 只是变量名，不是关键字；你写成 `err`、`ex` 也可以。
+4. 作用：你可以打印异常详情，方便定位问题。
+
+示例：
+```python
+try:
+    x = int("abc")
+except Exception as e:
+    print(type(e))  # <class 'ValueError'>
+    print(e)        # invalid literal for int() with base 10: 'abc'
+```
+
+如何理解“异常对象”：
+1. `Exception` 像“错误的大类”。
+2. 实际抛出的可能是它的子类（比如 `ValueError`、`TypeError`）。
+3. `as e` 接到的就是这次真实错误的信息载体。
+
+常见写法建议：
+1. 能具体就具体：优先 `except FileNotFoundError as e`。
+2. 最后再兜底：`except Exception as e`。
+3. 不要只写 `except:`（会把系统中断等也吃掉，不利于排查）。
+
 ---
 
 ## 9.5 clean_file 推荐实现逻辑（记住这 6 步）
@@ -1103,6 +1355,75 @@ def clean_file(input_path, output_path):
 2. 你能解释为什么要用 `with open(...)`  
 3. 你能解释 `try-except` 里“专门异常 + 兜底异常”的意义  
 4. 你能口述 clean_file 的 6 步流程
+
+---
+
+## 9.9 `read / readline / readlines` 对比（详细例子）
+
+假设 `a.txt` 内容是：
+```text
+hello
+ml
+rookie
+```
+
+三种读取方式：
+1. `f.read()`
+   - 返回一个完整字符串：`"hello\\nml\\nrookie\\n"`
+2. `f.readline()`
+   - 每次读一行字符串
+   - 第一次：`"hello\\n"`，第二次：`"ml\\n"`
+3. `f.readlines()`
+   - 返回列表：`["hello\\n", "ml\\n", "rookie\\n"]`
+
+什么时候用：
+1. 要整段处理：`read()`
+2. 要逐行处理（Day4 常见）：`readlines()` 或 `for line in f`
+
+---
+
+## 9.10 `f.write(...)` 与换行细节
+
+### 9.10.1 基本语法
+```python
+f.write("hello\\n")
+```
+
+含义：
+1. 写入字符串 `"hello"`
+2. 再写一个换行符 `\n`
+
+### 9.10.2 `\n` 和 `\\n` 区别
+1. `"\n"`：真正换行
+2. `"\\n"`：两个字符（反斜杠 + n）
+
+### 9.10.3 例子
+```python
+c = "python"
+b = "rocks"
+f.write(c + " " + b + "\n")  # 输出一行：python rocks
+```
+
+---
+
+## 9.11 Day4 手写文件 TODO 对照表（详细）
+
+1. TODO：写演示输入文件
+   - 用 `with open(path, "w", encoding="utf-8")`
+2. TODO：`clean_line` 清洗规则
+   - 去首尾空白：`strip()`
+   - 归一化空白：`" ".join(line.split())`
+3. TODO：读文件
+   - `readlines()` 拿到行列表
+4. TODO：逐行清洗并过滤空行
+   - `if c:` 过滤空字符串
+5. TODO：写输出文件
+   - 每行 `f.write(c + "\\n")`
+6. TODO：异常处理
+   - `FileNotFoundError` 专门处理
+   - `Exception as e` 兜底
+7. TODO：返回值
+   - 成功 `True`，失败 `False`
 
 ---
 
@@ -1314,146 +1635,414 @@ GitHub 远程仓库可以晚一点再接。
 
 ---
 
-## 11. Day6 讲义：DataLoader / mini-batch / 训练循环进阶
+## 10.13 Day5 手写文件 TODO 对照表（详细）
 
-## 11.1 Day6 目标
-Day6 的定位：
-1. 不是上大模型
-2. 不是刷新框架
-3. 是把 Day5 的“整批训练”升级为“按小批次训练”
-
-你今天要吃透这 4 个词：
-1. `dataset`（数据集）
-2. `loader`（按批次喂数据）
-3. `batch`（一小批样本）
-4. `epoch`（把整个数据集完整看一遍）
-
----
-
-## 11.2 三个概念一次讲清
-
-### 11.2.1 样本（sample）
-一条训练数据，比如：
-- 输入 `x=6`
-- 标签 `y=16`
-
-### 11.2.2 批次（batch）
-一次不喂全部数据，而是喂一小块，比如 16 条。
-
-好处：
-1. 显存/内存压力更小
-2. 更新更频繁
-3. 是深度学习标准训练方式
-
-### 11.2.3 轮次（epoch）
-把整个训练集都走完 1 次，叫 1 个 epoch。
-
-举例：
-- 数据总数 = 100
-- `batch_size=16`
-- 1 个 epoch 约有 `ceil(100/16)=7` 次参数更新
+1. TODO：`get_device`
+   - `mps` 可用就返回 `torch.device("mps")`
+   - 否则返回 `torch.device("cpu")`
+2. TODO：`make_data`
+   - 构造 `x`（形状 `[N,1]`）
+   - 构造 `y = 2*x + 1`
+   - `x/y` 都放到 `device`
+3. TODO：`train_linear`
+   - 定义 `model/loss_fn/optimizer`
+   - 写训练三连
+   - 返回 `model, final_loss`
+4. TODO：`predict_one`
+   - 构造测试输入 `[[x_value]]`
+   - `with torch.no_grad()` 前向推理
+   - 返回 float 结果
 
 ---
 
-## 11.3 DataLoader 是干嘛的
+## 10.14 Day5 三组高频语法（你总问到的）
 
-`DataLoader` 负责：
-1. 把数据切成 batch
-2. 每次循环给你 `xb, yb`
-3. 可选打乱顺序（`shuffle=True`）
+### 10.14.1 `x = x.to(device)`
+含义：
+1. 右侧 `x.to(device)` 返回“迁移后张量”
+2. 左侧再赋值回 `x`
+3. 目的是让数据和模型在同设备
 
-标准写法：
+### 10.14.2 `final_loss = float(loss.item())`
+含义：
+1. `loss` 是 Tensor，不是 Python 数字
+2. `loss.item()` 取标量值
+3. `float(...)` 转为 Python 浮点数，便于打印/比较
+
+### 10.14.3 `with torch.no_grad():`
+含义：
+1. 进入“无梯度”上下文
+2. 推理时更省内存、更稳定
+3. 不会污染训练图
+
+---
+
+## 10.15 Day5 常见误区（补充）
+
+1. `nn.linear` 大小写错误（正确是 `nn.Linear`）
+2. 忘记 `optimizer.step()`，loss 不降
+3. 忘了把数据和模型放到同一设备
+4. 以为 `range(epochs)` 是无限循环（其实是固定轮数）
+5. 以为 Day5 就是实战项目（其实是训练闭环预热）
+
+---
+
+## 11. Day6 基础课：DataLoader / mini-batch / 训练循环语法（超详细）
+
+> 这一章只做一件事：把你写 Day6 手写文件时会遇到的“语法和概念坑”全部提前讲清楚。  
+> `##11` 是基础语法课，`##12` 是完整任务课。先 11，再 12，写 handwrite 会顺很多。
+
+## 11.1 你为什么会在 Day6 卡住
+最常见卡点不是“数学不会”，而是这些语法点没打通：
+1. `torch.utils.data` 到底是什么
+2. `DataLoader(...)` 各参数在干嘛
+3. `for xb, yb in loader` 这句语法到底怎么解包
+4. `train/eval/no_grad` 应该放哪
+5. batch 训练为什么复杂度仍是 `O(n)`
+
+这章就是把这些点拆开讲。
+
+---
+
+## 11.2 先统一术语（写代码前必须统一口径）
+
+### 11.2.1 sample（样本）
+一条数据。  
+比如 MNIST 一条样本是：一张数字图 + 一个标签（0~9）。
+
+### 11.2.2 batch（小批）
+一次喂给模型的一组样本。  
+例如 `batch_size=128`，表示一次处理 128 张图。
+
+### 11.2.3 epoch（轮次）
+把整个训练集完整走一遍，叫 1 个 epoch。
+
+### 11.2.4 step / iteration（一步更新）
+每处理一个 batch 并执行一次 `optimizer.step()`，叫一步更新。
+
+小例子：
+1. 训练集有 60000 条
+2. `batch_size=128`
+3. 每个 epoch 大约有 `60000/128 ≈ 469` 步更新
+
+---
+
+## 11.3 `torch.utils.data` 是什么（命名也讲清）
+
+你会看到：
 ```python
-from torch.utils.data import TensorDataset, DataLoader
+from torch.utils.data import DataLoader
+```
 
-dataset = TensorDataset(x, y)
-loader = DataLoader(dataset, batch_size=16, shuffle=True)
+拆开看：
+1. `torch`：PyTorch 顶层包
+2. `utils`：utilities，工具模块
+3. `data`：数据管道模块
+
+所以 `torch.utils.data` 就是“PyTorch 的数据工具箱”。
+
+命名规则：
+1. 模块通常小写（`utils`, `data`）
+2. 类通常驼峰（`DataLoader`, `TensorDataset`）
+3. 点号表示层级路径（包.子包.模块）
+
+---
+
+## 11.4 `DataLoader(...)` 语法逐项拆解
+
+最常见写法：
+```python
+train_loader = DataLoader(train_ds, batch_size=128, shuffle=True)
+test_loader = DataLoader(test_ds, batch_size=512, shuffle=False)
+```
+
+参数解释：
+1. 第一个参数 `train_ds/test_ds`：数据集对象（比如 `datasets.MNIST(...)`）
+2. `batch_size`：一次取多少条
+3. `shuffle`：每个 epoch 开始时是否打乱顺序
+
+`train_ds` / `test_ds` 的完整由来语句（从源头到可用）：
+```python
+from torchvision import datasets, transforms
+
+transform = transforms.ToTensor()
+
+train_ds = datasets.MNIST(
+    root="data",
+    train=True,
+    transform=transform,
+    download=True
+)
+
+test_ds = datasets.MNIST(
+    root="data",
+    train=False,
+    transform=transform,
+    download=True
+)
+```
+
+参数逐项细拆（你问的重点）：
+
+1. `root="data"` 到底是什么意思  
+   - `root` 是“数据集存放根目录”参数。  
+   - 写成 `"data"` 是相对路径，表示当前工作目录下的 `data/` 文件夹。  
+   - 如果你在项目根目录运行脚本，它通常对应：`.../ml-rookie/data`。  
+   - 更稳的写法（不依赖当前终端位置）：
+```python
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent
+DATA_DIR = BASE_DIR / "data"
+train_ds = datasets.MNIST(root=str(DATA_DIR), train=True, transform=transform, download=True)
+```
+
+2. `download=True` 是什么意思  
+   - 含义：如果本地没有数据，就自动下载；有了就复用，不会每次都重新下载。  
+   - 如果写 `download=False` 且本地没数据，通常会报找不到数据集。  
+   - “去哪里下载”不是你手写的，`torchvision.datasets.MNIST` 类内部已经写好镜像地址。  
+   - 你本机当前 `MNIST.mirrors` 是：
+     - `https://ossci-datasets.s3.amazonaws.com/mnist/`
+     - `http://yann.lecun.com/exdb/mnist/`
+   - 具体下载文件（类里也写好了）是 4 个 gzip 包（训练图像/训练标签/测试图像/测试标签）。
+
+3. `transform=transform` 是什么意思  
+   - 这里传入的是“预处理函数（可调用对象）”。  
+   - `transform = transforms.ToTensor()` 的作用：
+     - 把图片转成 PyTorch Tensor
+     - 把像素从 `0~255` 归一到 `0~1`
+     - 对 MNIST（灰度图）输出形状通常是 `[1, 28, 28]`
+   - 这个变换不是一次性提前改完所有数据，而是“每次取样本时”自动执行。
+
+4. `train=True/False` 再强调一次  
+   - `train=True`：构造训练集对象（约 6 万张）。  
+   - `train=False`：构造测试集对象（约 1 万张）。
+
+一句话总流程：
+1. 指定数据放哪（`root`）
+2. 需要就自动下载（`download=True`）
+3. 取样本时做预处理（`transform=ToTensor()`）
+4. 根据 `train` 选择训练集或测试集
+
+为什么训练集常 `shuffle=True`：
+1. 减少样本顺序带来的偏差
+2. 训练更稳定
+
+为什么测试集常 `shuffle=False`：
+1. 评估不需要随机性
+2. 更便于复现和排查问题
+
+### 11.4.1 DataLoader 本身到底是什么
+一句话：`DataLoader` 是“按批次取数据的迭代器对象”。
+
+你可以把它想成“传送带”：
+1. `Dataset` 里放的是全量样本（仓库）。
+2. `DataLoader` 决定每次搬多少、是否打乱（传送带规则）。
+3. `for xb, yb in loader` 时，它每轮给你一批 `(输入, 标签)`。
+
+关系图（文字版）：
+1. `Dataset`：我有哪些数据
+2. `DataLoader`：我怎么一批一批拿数据
+3. 训练循环：我拿到这一批后怎么训练
+
+### 11.4.2 “打包成张量”是什么意思（带例子）
+“打包成张量”就是：把多条样本堆叠成一个 batch 的大张量。
+
+先看单条样本（MNIST）：
+1. 一张图 `x` 的形状是 `[1, 28, 28]`
+2. 一个标签 `y` 是一个整数，比如 `7`
+
+如果 `batch_size=4`，DataLoader 一次拿 4 条，会变成：
+1. `xb` 形状：`[4, 1, 28, 28]`
+2. `yb` 形状：`[4]`，例如 `[7, 2, 1, 9]`
+
+这就叫“把一批样本打包成张量”。
+
+再看最小代码感受：
+```python
+for xb, yb in train_loader:
+    print(xb.shape, yb.shape)
+    break
+```
+可能输出：
+```text
+torch.Size([128, 1, 28, 28]) torch.Size([128])
 ```
 
 解释：
-1. `TensorDataset(x, y)`：把输入和标签绑成一对一数据集
-2. `batch_size=16`：每次给 16 条
-3. `shuffle=True`：每个 epoch 开始前打乱顺序，减少“记住顺序”的风险
+1. 前面的 `128` 是 batch 大小。
+2. 后面的 `1, 28, 28` 是单张图结构。
+3. 标签只有类别编号，所以是 `[128]`。
 
 ---
 
-## 11.4 `for xb, yb in loader` 到底是什么意思
+## 11.5 `for xb, yb in loader` 到底是什么语法
 
-这句是 Day6 核心语法：
+这是“解包赋值”语法。
+
+先看通用例子：
+```python
+pairs = [(1, 10), (2, 20)]
+for a, b in pairs:
+    print(a, b)
+```
+
+`loader` 也是类似：每次吐出一个二元结构 `(inputs, labels)`，所以可以写：
 ```python
 for xb, yb in loader:
     ...
 ```
 
 含义：
-1. `loader` 每次产出一个 batch
-2. 这个 batch 里有两份张量：
-   - `xb`：这批输入
-   - `yb`：这批标签
-3. 你拿到这两个张量后做前向、算 loss、反向传播
+1. `xb`：这一批输入（batch x）
+2. `yb`：这一批标签（batch y）
 
-注意：
-1. `xb` / `yb` 变量名不是固定的，你叫 `batch_x` / `batch_y` 也行
-2. 这是“解包”语法，因为 loader 每次返回的是二元结构 `(inputs, labels)`
+变量名不是固定的，你也可写 `batch_x, batch_y`。
 
 ---
 
-## 11.5 Day6 最小训练循环（按 batch）
+## 11.6 在 MNIST 里，`xb/yb` 的形状大概是什么
+
+假设 `batch_size=128`：
+1. `xb.shape` 常见是 `[128, 1, 28, 28]`
+2. `yb.shape` 常见是 `[128]`
+
+解释：
+1. `128`：这一批有 128 张图
+2. `1`：灰度通道数
+3. `28,28`：图像高宽
+4. 标签是一维类别编号列表（每个值 0~9）
+
+---
+
+## 11.7 Day6 训练循环的标准位置关系
 
 ```python
-for epoch in range(epochs):
-    for xb, yb in loader:
+for epoch in range(epochs):     # 外层：轮次
+    model.train()               # 训练模式
+
+    for xb, yb in train_loader: # 内层：每个 batch
         xb = xb.to(device)
         yb = yb.to(device)
 
-        pred = model(xb)
-        loss = loss_fn(pred, yb)
+        logits = model(xb)
+        loss = loss_fn(logits, yb)
 
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
 ```
 
-逻辑顺序：
-1. 外层 epoch：控制训练总轮数
-2. 内层 batch：每轮里分批喂数据
-3. `to(device)`：保证“模型和数据在同设备”
-4. 三件套：`zero_grad -> backward -> step`
+你要死记硬背的顺序：
+1. `forward`
+2. `loss`
+3. `zero_grad`
+4. `backward`
+5. `step`
 
 ---
 
-## 11.6 Day6 常见错误
+## 11.8 评估循环为什么和训练循环不同
 
-1. 忘了把 `xb/yb` 移到 device
-报错常见为设备不一致。
+评估时要写：
+```python
+model.eval()                               # 1) 切到评估模式：告诉模型“现在不是训练”
+correct, total = 0, 0                      # 2) 同时初始化两个计数器：答对数/总样本数
+with torch.no_grad():                      # 3) 上下文管理器：评估时关闭梯度计算，省内存更快
+    for xb, yb in test_loader:             # 4) for + 解包：每轮从测试集取一批 (输入, 标签)
+        xb = xb.to(device)                 # 5) 把这一批输入放到 device（cpu/mps）上
+        yb = yb.to(device)                 # 6) 把这一批标签也放到同一 device，避免设备不一致报错
+        logits = model(xb)                 # 7) 前向推理：得到每个类别的原始分数 logits
+        pred_label = logits.argmax(dim=1)  # 8) 按类别维取最大分数下标 -> 预测类别 id
+        correct += (pred_label == yb).sum().item()  # 9) 先比较得到布尔张量(对=True/错=False)；.sum()会把True当1、False当0求和=本批答对个数；.item()把单元素张量转成Python数字，便于与correct(普通整数)相加
+        total += yb.size(0)                # 10) yb.size(0) 是本批样本数，累加到总数
+        # 例子（对应第 1954-1956 行，step by step）：
+        # 假设当前 batch 有 3 张图，model(xb) 得到：
+        # logits = [[0.1, 2.3, 0.2], [1.8, 0.2, 0.1], [0.3, 0.4, 0.9]]
+        # 第 1955 行 argmax(dim=1) 后：pred_label = [1, 0, 2]
+        # 假设真实标签 yb = [1, 2, 2]
+        # 比较 (pred_label == yb) 得到：[True, False, True]
+        # 第 1956 行 .sum() 后是 2（True 按 1、False 按 0），.item() 把它变成 Python 数字 2
+        # 所以这一批会让 correct 增加 2
 
-2. 把 `batch_size` 写太大
-初学阶段会导致速度慢或内存压力大。
+acc = 100.0 * correct / total              # 11) 准确率公式：答对/总数，再乘 100 变百分比
+print("test acc:", acc)                    # 12) 打印最终测试准确率，便于日志记录
+```
 
-3. 在内层循环外才 `zero_grad()`
-会导致梯度累积污染。
+原因：
+1. `model.eval()`：切到评估模式（某些层行为会变）
+2. `torch.no_grad()`：不计算梯度，省内存、加速推理
 
-4. 误以为 `shuffle=True` 会改变标签对应关系
-不会。`x` 和 `y` 是一对一同步打乱。
-
-5. 看到 `for xb, yb in loader` 就懵
-记住：这是“每次拿一批输入和一批标签”。
+训练和评估要分开，不要混写。
 
 ---
 
-## 11.7 Day6 验收标准（执行版）
+## 11.9 为什么 batch 训练仍是 `O(n)`
 
-1. `everyday_learning/day6/day6_handwrite.py` 断言全部通过
-2. 你能口述：`sample/batch/epoch` 区别
-3. 你能解释：为什么 `shuffle=True` 常常更稳
-4. 你能解释：为什么 batch 训练仍然是 `O(n)` 级遍历数据
-5. 你能说明：Day5（整批）和 Day6（小批）训练循环区别
+设：
+1. 总样本数 `n`
+2. batch 大小 `b`
+
+每个 epoch 的 batch 数约 `n/b`，每个 batch 处理 `b` 条，所以总量：
+`(n/b) * b = n`
+
+所以每个 epoch 主阶仍是 `O(n)`。  
+batch 改变的是“内存占用和更新频率”，不是主阶复杂度。
 
 ---
 
-## 11.8 Day6 和 LeetCode 的关系
+## 11.10 Day6 手写文件 TODO 对照表（重点）
 
-Day6 安排建议：
+你写 `day6_handwrite.py` 时，按这个映射：
+1. `get_device`：
+   - 会写 `torch.device("mps")` 和 `torch.device("cpu")`
+2. `build_loaders`：
+   - 会写 `datasets.MNIST(...)`
+   - 会写 `DataLoader(..., batch_size=..., shuffle=...)`
+3. `build_model`：
+   - 会写 `nn.Sequential(...)`
+4. `train_one_epoch`：
+   - 会写 `for xb, yb in train_loader`
+   - 会写训练三连
+5. `evaluate_acc`：
+   - 会写 `model.eval()` + `torch.no_grad()`
+   - 会写 `argmax(dim=1)` 统计准确率
+6. `train_pipeline`：
+   - 会写两阶段训练和指标记录
+
+---
+
+## 11.11 Day6 常见错误（按概率排序）
+
+1. 设备不一致
+   - 报错关键词：`Expected all tensors to be on the same device`
+   - 处理：检查 `model/xb/yb` 是否都 `.to(device)`
+
+2. `for xb, yb in loader` 写错缩进
+   - 处理：保证内层循环在 epoch 循环内部
+
+3. 忘了 `optimizer.zero_grad()`
+   - 后果：梯度累积，训练异常
+
+4. 评估阶段忘记 `no_grad`
+   - 后果：不必要的显存/内存占用
+
+5. `argmax` 维度写错
+   - 分类任务通常是 `argmax(dim=1)`
+
+---
+
+## 11.12 你写代码前先口述这 6 句
+1. loader 每次吐的是 `(xb, yb)`
+2. 训练集要 shuffle，测试集一般不 shuffle
+3. 一个 epoch 是看完全部样本一次
+4. batch 训练每个 epoch 复杂度仍是 `O(n)`
+5. 训练时 `model.train()`，评估时 `model.eval()`
+6. 评估要用 `torch.no_grad()`
+
+---
+
+## 11.13 Day6 和 LeetCode 的关系
+Day6 建议顺序：
 1. 先做 Day6 手写（ML 主线）
 2. 再做 LeetCode 1 题（算法手感）
 
@@ -1461,51 +2050,345 @@ Day6 安排建议：
 
 ---
 
-## 12. Day6（Week1 启动）讲义：MNIST baseline（MLP）
+## 12. Day6（Week1 启动）讲义：MNIST baseline（MLP，超详细版）
 
-> 执行以本章节为准：Day6 要做的是“第一个完整分类任务”，不是再做线性回归。
+> 执行以本章节为准。  
+> 这一章目标：从“会写训练循环”升级到“会跑完整分类任务（数据->训练->评估->记录）”。
 
-## 12.1 Day6 目标（你这次要交付什么）
-1. 跑通 MNIST 训练脚本（`mps` 优先，失败回退 `cpu`）
-2. baseline 模型：1 个简单 MLP（`Flatten -> Linear -> ReLU -> Linear`）
-3. 阶段目标：
-   - Phase1：测试集准确率 `> 92%`
-   - Phase2：测试集准确率 `> 95%`
-4. 记录 3 个数字：`final loss`、`test acc`、`训练耗时`
-5. 当天只做 1 题 LeetCode（不超载）
-
----
-
-## 12.2 MNIST 是什么
-MNIST 是手写数字数据集（0-9）：
-1. 训练集 60000 张图
-2. 测试集 10000 张图
-3. 每张图大小 `28x28`，灰度图
-
-为什么它适合作为第一站：
-1. 小而标准
-2. 模型容易收敛
-3. 你能快速感受到“训练-评估-迭代”的闭环
+## 12.1 Day6 目标（你要交付什么）
+1. 跑通 MNIST 训练脚本（`mps` 优先，失败回退 `cpu`）。
+2. 使用 baseline 模型：`Flatten -> Linear -> ReLU -> Linear`。
+3. 两阶段指标：
+   - Phase1：测试集准确率 `>= 92%`
+   - Phase2：测试集准确率 `>= 95%`
+4. 记录 4 个结果：
+   - `final loss`
+   - `phase1 test acc`
+   - `phase2 test acc`
+   - `elapsed sec`（训练耗时，秒）
 
 ---
 
-## 12.3 这次数据流（必须记住）
+## 12.2 Day6 你会用到哪些文件
+1. 手写：`everyday_learning/day6/day6_handwrite.py`
+2. 参考：`everyday_learning/day6/day6_solution.py`
+3. 环境检查：`everyday_learning/day6/day6_env_check.py`
 
-完整流程：
-1. `datasets.MNIST(...)` 下载并读取数据
-2. `transforms.ToTensor()` 把图像转成张量（值归一到 [0,1]）
-3. `DataLoader` 分 batch 喂给模型
-4. 模型前向得到 `logits`
-5. `CrossEntropyLoss` 计算分类损失
-6. 反向传播更新参数
-7. 用测试集算准确率
+学习顺序：
+1. 先看本讲义（20-30 分钟）
+2. 再写 handwrite
+3. 卡住再看 solution
 
 ---
 
-## 12.4 baseline MLP 结构
+## 12.3 先讲语法：`import ...` 到底是什么
+
+你会看到：
 
 ```python
-nn.Sequential(
+import time
+from pathlib import Path
+```
+
+含义：
+1. `import time`：导入 `time` 模块（计时用）。
+2. `from pathlib import Path`：从 `pathlib` 模块里导入 `Path` 类（路径处理用）。
+
+为什么不“默认全导入”：
+1. 启动慢、内存占用高。
+2. 命名冲突风险高。
+3. 代码可读性差（你看不出用了哪些能力）。
+
+---
+
+## 12.4 `Path` 与计时语法（Day6 必会）
+
+### 12.4.1 路径语法
+```python
+base_dir = Path(__file__).resolve().parent
+data_dir = base_dir / "data"
+data_dir.mkdir(parents=True, exist_ok=True)
+```
+
+解释：
+1. `__file__` 是什么  
+   - `__file__` 是 Python 在“脚本运行模式”下自动提供的变量。  
+   - 它保存“当前这个 `.py` 文件”的路径（通常是相对或绝对路径字符串）。  
+   - 注意：在交互式终端/某些 notebook 场景里，`__file__` 可能不存在。
+
+2. `Path(__file__)` 是什么  
+   - `Path(...)` 把字符串路径包装成 `Path` 对象。  
+   - 目的：后续可以用 `.parent`、`.mkdir()`、`/` 拼接等“路径专用方法”，比手写字符串更安全。
+
+3. `.resolve()` 是什么  
+   - 作用：把路径“解析成绝对路径”，并规范化 `.`、`..` 等部分。  
+   - 例如：`"./everyday_learning/day6/day6_handwrite.py"` 可能被解析成  
+     `/Users/chenqingan/Library/Mobile Documents/com~apple~CloudDocs/ml-rookie/everyday_learning/day6/day6_handwrite.py`
+
+4. `.parent` 是什么  
+   - `parent` 表示“上一级目录”。  
+   - 所以 `Path(__file__).resolve().parent` 的结果就是：当前脚本所在文件夹路径。  
+   - 这也是为什么变量名叫 `base_dir`（基础目录）。
+
+5. `base_dir / "data"` 为什么能这样写  
+   - 这里的 `/` 不是数学除法，而是 `Path` 对象重载后的“路径拼接运算符”。  
+   - 等价于“在 `base_dir` 下再进入一个 `data` 子目录”。  
+   - 好处：自动处理不同系统的路径分隔符，比字符串拼接稳定。
+
+6. `mkdir(parents=True, exist_ok=True)` 逐项解释  
+   - `mkdir`：创建目录的方法。  
+   - `parents=True`：如果上级目录不存在，连上级一起创建（递归创建）。  
+   - `exist_ok=True`：如果目录已经存在，不报错，直接继续执行。  
+   - 实战意义：脚本可重复运行，不会因为“目录已存在”而中断。
+
+7. 一口气串起来理解这三行  
+   - 第 1 行：拿到“当前脚本所在目录”作为 `base_dir`  
+   - 第 2 行：在该目录下定义 `data_dir = base_dir/data`  
+   - 第 3 行：确保 `data_dir` 这个目录一定存在（不存在就创建）
+
+### 12.4.2 耗时语法
+```python
+start = time.perf_counter()
+# ...训练...
+elapsed = time.perf_counter() - start
+```
+`time.perf_counter()` 是“模块.函数调用”语法。
+
+拆开看：
+
+1. `time`：模块名（你前面 `import time` 导入的）。  
+2. `perf_counter`：这个模块里的函数名。  
+3. `()`：调用函数执行。  
+
+它返回一个高精度计时值（秒，浮点数），常用于测耗时。
+
+典型写法：
+
+```python
+start = time.perf_counter()
+# 这里跑训练
+elapsed = time.perf_counter() - start
+```
+
+所以它在这里属于：  
+`赋值语句 + 函数调用 + 浮点运算`。
+
+`elapsed sec` 就是“已耗时（秒）”。
+补充：每次调用 `time.perf_counter()`，都会返回“调用当下这一刻”的高精度计时值（单调递增），通常不用看绝对值本身，而是用“两次调用之差”来计算耗时。
+
+---
+
+## 12.5 `torch.device("mps")` 为什么要加引号
+
+示例：
+```python
+torch.device("mps")
+```
+
+`"mps"` 必须是字符串：
+1. 加引号：表示文本常量（设备名）。
+2. 不加引号：Python 会把 `mps` 当变量名，通常报 `NameError`。
+
+同理：`"cpu"`、`"cuda"` 也都要加引号。
+
+---
+
+## 12.6 MNIST 是什么，为什么用它
+
+MNIST：
+1. 训练集 60000 张
+2. 测试集 10000 张
+3. 图片大小 28x28 灰度图
+4. 标签是数字类别 0~9
+
+优点：
+1. 数据标准，教程多。
+2. MLP 很容易收敛。
+3. 适合零基础完成“第一次分类闭环”。
+
+---
+
+## 12.7 `datasets.MNIST(...)` 语法拆解
+
+示例：
+```python
+from torchvision import datasets, transforms
+
+transform = transforms.ToTensor()
+train_ds = datasets.MNIST(root="data", train=True, transform=transform, download=True)
+test_ds = datasets.MNIST(root="data", train=False, transform=transform, download=True)
+```
+
+先补充：`transforms.ToTensor()` 到底做了哪些预处理（你问的重点）
+
+它通常做 3 件事：
+1. 数据类型转换：把图像数据转成 PyTorch 的 `torch.Tensor`。  
+2. 维度顺序转换：常见图像从 `H x W x C` 转成 `C x H x W`。  
+3. 数值范围归一：若输入是常见 `uint8` 图像（0~255），会除以 255 变成 `0.0~1.0` 的 `float32`。
+
+为什么这么做：
+1. 神经网络（尤其 PyTorch 模型）期望输入是 Tensor，而不是 PIL 图片对象。  
+2. PyTorch 的卷积层默认用 `C x H x W`。  
+3. 把像素缩到 `0~1`，训练更稳定，梯度更健康。
+
+例子 1（灰度像素值变化）：
+1. 原像素 `0` -> `0.0`  
+2. 原像素 `128` -> `0.5019`（约等于 `128/255`）  
+3. 原像素 `255` -> `1.0`
+
+例子 2（MNIST 单张图形状变化）：
+1. 原图（灰度）可理解为 `28 x 28`。  
+2. `ToTensor()` 后会变成 `1 x 28 x 28`（`1` 是通道数，灰度图只有 1 个通道）。
+
+小提醒（进阶但实用）：
+1. `ToTensor()` 只做“转 Tensor + 基础归一”，不做“均值方差标准化”。  
+2. 如果后续要标准化，通常再加：`transforms.Normalize(mean, std)`。
+
+这三行逐行拆解：
+
+### 12.7.1 第 1 行：`transform = transforms.ToTensor()`
+这行是在“定义预处理规则”。
+
+1. 左边 `transform`：你自己定义的变量名。  
+2. 右边 `transforms.ToTensor()`：调用 torchvision 里的函数，返回一个“可调用的预处理对象”。  
+3. 后面传 `transform=transform` 时，就会对每个样本自动执行这个预处理。
+
+一句话：先把“图像 -> 张量”的规则存到 `transform` 里，后面复用。
+
+### 12.7.2 第 2 行：`train_ds = datasets.MNIST(...)`
+这行是“构造训练集对象”。
+
+参数详细解释：
+1. `root="data"`
+   - 数据保存目录是 `data` 文件夹（相对当前运行目录）。
+   - 如果目录不存在，下载时会自动创建。
+2. `train=True`
+   - 表示取训练集（60000 张）。
+3. `transform=transform`
+   - 每次取样本时自动做 `ToTensor`。
+   - 所以你拿到的不是 PIL 图像，而是 Tensor。
+4. `download=True`
+   - 本地没有 MNIST 就下载。
+   - 本地已有就直接复用，不重复下载。
+
+### 12.7.3 第 3 行：`test_ds = datasets.MNIST(...)`
+这行和训练集构造几乎一样，只改了一个关键参数：
+
+1. `train=False`：取测试集（10000 张）。  
+2. 其他参数一致：路径一致、预处理一致、自动下载策略一致。
+
+为什么训练集和测试集都要用同一个 `transform`：
+1. 保证输入格式一致（都变成 Tensor）。  
+2. 保证数值范围一致（都在 [0,1]）。
+
+### 12.7.4 这三个对象最终是什么
+1. `transform`：预处理规则对象（“怎么处理每张图”）。  
+2. `train_ds`：训练集 Dataset 对象（可索引）。  
+3. `test_ds`：测试集 Dataset 对象（可索引）。
+
+你可以立刻验证：
+```python
+print(type(train_ds))
+print(len(train_ds), len(test_ds))
+x0, y0 = train_ds[0]
+print(x0.shape, x0.dtype, y0)
+```
+
+典型输出含义：
+1. `len(train_ds)=60000`，`len(test_ds)=10000`。  
+2. `x0.shape` 常见是 `torch.Size([1, 28, 28])`。  
+3. `x0.dtype` 常见是 `torch.float32`。  
+4. `y0` 是类别编号（0~9 的整数）。
+
+### 12.7.5 常见误区
+1. 误区：`root="data"` 是“引入一个必须已存在的目录”。  
+   正解：它是“指定保存路径”，不存在会创建。
+2. 误区：`download=True` 每次都重新下载。  
+   正解：已有数据时不会重复下载。
+3. 误区：`train_ds` 里已经是 batch。  
+   正解：`train_ds` 是单样本级别，batch 由 `DataLoader` 负责。
+
+---
+
+## 12.7.6 `datasets.MNIST` 的“源头”与调用链（硬件/C 思维版）
+
+你这个问题非常关键：`MNIST` 不是“凭空可用”，它有明确定义源头。
+
+调用链：
+1. 你写 `from torchvision import datasets`
+2. Python 会加载 `torchvision.datasets` 模块
+3. 该模块对外暴露了 `MNIST` 这个类
+4. 所以 `datasets.MNIST` 指向的是一个类对象
+5. 你写 `datasets.MNIST(...)` 时，本质是在实例化这个类
+
+你当前环境里的真实位置（可验证）：
+1. `datasets` 入口模块：
+   - `.../site-packages/torchvision/datasets/__init__.py`
+2. `MNIST` 类定义文件：
+   - `.../site-packages/torchvision/datasets/mnist.py`
+3. 类全名：
+   - `torchvision.datasets.mnist.MNIST`
+
+和 C 的类比：
+1. `datasets` 像“导出符号入口”
+2. `mnist.py` 是具体实现
+3. `datasets.MNIST(...)` = 通过入口拿到符号并构造实例
+
+你可以自己打印验证：
+```python
+import inspect
+from torchvision import datasets
+
+print(inspect.getfile(datasets))         # datasets 入口文件
+print(inspect.getfile(datasets.MNIST))   # MNIST 定义文件
+print(datasets.MNIST.__module__)         # 类所属模块
+```
+
+---
+
+## 12.8 `transforms.ToTensor()` 在做什么
+
+作用是两步：
+1. 把图像对象转成 PyTorch Tensor。
+2. 像素值从 `0~255` 归一化到 `0~1`。
+
+例子：
+1. 像素 `0 -> 0.0`
+2. 像素 `128 -> 0.502...`
+3. 像素 `255 -> 1.0`
+
+为什么这么做：
+1. 数值范围更稳定。
+2. 训练更容易收敛。
+
+---
+
+## 12.9 `DataLoader` 与 batch 语法
+
+示例：
+```python
+from torch.utils.data import DataLoader
+
+train_loader = DataLoader(train_ds, batch_size=128, shuffle=True)
+test_loader = DataLoader(test_ds, batch_size=512, shuffle=False)
+```
+
+参数解释：
+1. `batch_size=128`：每次喂 128 张图。
+2. `shuffle=True`：每个 epoch 打乱训练集顺序。
+3. `shuffle=False`：测试集通常不打乱。
+
+为什么 batch 训练仍然是 `O(n)`：
+1. 1 个 epoch 仍要看完全部 `n` 个样本。
+2. 只是把一次全量喂入改成多次小批喂入。
+3. 主阶不变，仍是线性遍历数据。
+
+---
+
+## 12.10 baseline 模型语法：`nn.Sequential(...)`
+
+```python
+model = nn.Sequential(
     nn.Flatten(),
     nn.Linear(28 * 28, 128),
     nn.ReLU(),
@@ -1514,26 +2397,74 @@ nn.Sequential(
 ```
 
 解释：
-1. `Flatten`：把 `1x28x28` 拉平成 `784`
-2. 第一层全连接：`784 -> 128`
-3. 激活函数 `ReLU`
-4. 输出层：`128 -> 10`（对应 0~9 共 10 类）
+1. `nn.Sequential` 不是你自己命名，是官方类。
+2. 它把多个模块按顺序串起来。
+3. 四个模块里真正有可训练参数的是两层 `Linear`。
 
-`10` 不是概率，而是 10 个类别分数（logits）。
+逐层理解：
+1. `Flatten`：`[B,1,28,28] -> [B,784]`
+2. `Linear(784,128)`：全连接层
+3. `ReLU`：激活函数
+4. `Linear(128,10)`：输出 10 类分数
 
 ---
 
-## 12.5 为什么分类用 CrossEntropyLoss
-`CrossEntropyLoss` 适配“多分类 + logits 输出”的场景。
+## 12.11 `logits` 是什么
 
-你只需记住：
-1. 输入：模型输出 logits（不需要先 softmax）
+`logits` = 模型最后一层输出的“原始分数”。
+1. 不是概率。
+2. 可以是负数。
+3. 分数最大那一类通常是预测类别。
+
+例子：
+`[1.2, -0.5, 3.1]`  
+最大是第 3 类，所以预测类是 `2`（从 0 开始计）。
+
+---
+
+## 12.12 为什么这次用 `CrossEntropyLoss`，不用 `MSELoss`
+
+这次是多分类任务（0~9），标准损失是 `CrossEntropyLoss`。
+
+你记住：
+1. 输入：`logits`（不手动 softmax）
 2. 标签：类别整数（0~9）
-3. 作用：鼓励正确类别分数更高
+3. 作用：正确类别分数越高，loss 越小
+
+而 `MSELoss` 更适合回归（预测连续值），不是分类首选。
+
+一个直觉例子：
+1. 真值类别是 2，模型给真值类概率高 -> loss 小。
+2. 真值类别概率很低 -> loss 大（惩罚重）。
 
 ---
 
-## 12.6 准确率怎么算
+## 12.13 训练循环（Day6 版）
+
+```python
+for epoch in range(epochs):
+    model.train()
+    for xb, yb in train_loader:
+        xb = xb.to(device)
+        yb = yb.to(device)
+
+        logits = model(xb)
+        loss = loss_fn(logits, yb)
+
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+```
+
+逐行核心：
+1. `model.train()`：开启训练模式。
+2. `for xb, yb in loader`：每轮拿一批数据。
+3. `to(device)`：模型和数据设备一致。
+4. `zero_grad -> backward -> step`：训练三连。
+
+---
+
+## 12.14 准确率三行代码详细解释
 
 ```python
 pred_label = logits.argmax(dim=1)
@@ -1541,59 +2472,92 @@ correct += (pred_label == yb).sum().item()
 acc = 100.0 * correct / total
 ```
 
-含义：
-1. `argmax(dim=1)` 取每行最大值下标（预测类别）
-2. 和真实标签逐个比较
-3. 正确数 / 总数 = 准确率
+解释：
+1. `argmax(dim=1)`：每个样本取分数最大的类别下标。
+2. `(pred_label == yb)`：逐个比较对错。
+3. `.sum().item()`：统计这一批答对几个。
+4. `100.0 * correct / total`：转成百分比准确率。
+
+小例子：
+1. `pred=[1,0,2,0]`
+2. `label=[1,2,2,0]`
+3. 对错是 `[T,F,T,T]`，正确 3/4
+4. `acc = 75.0`
 
 ---
 
-## 12.7 两阶段目标怎么跑
+## 12.15 Day5（整批）和 Day6（小批）区别
 
-Phase1（先达标）：
+1. Day5：整批训练
+   - 每个 epoch 常是 1 次更新
+2. Day6：小批训练
+   - 每个 epoch 多次更新（每个 batch 一次）
+3. Day6 更接近真实工程训练流程。
+
+---
+
+## 12.16 两阶段目标怎么跑
+
+Phase1：
 1. 训练 1 个 epoch
-2. 测试集评估，先看是否 `> 92%`
+2. 测试准确率先看 `>= 92%`
 
-Phase2（再冲刺）：
-1. 在同一模型上继续训练 1 个 epoch
-2. 再评估，目标 `> 95%`
+Phase2：
+1. 在同一模型继续训练 1 个 epoch
+2. 测试准确率冲到 `>= 95%`
 
-这就是你说的“先 baseline，再拉高指标”。
+记录：
+1. `final loss`
+2. `phase1 acc`
+3. `phase2 acc`
+4. `elapsed sec`
 
 ---
 
-## 12.8 MPS 优先、失败回 CPU
+## 12.17 MPS 优先、失败回 CPU（保底策略）
 
 推荐逻辑：
-1. 默认 `device = mps`
-2. 若 MPS 训练报 RuntimeError，则自动 fallback 到 CPU
+1. 优先 `torch.device("mps")`
+2. 若 MPS 训练抛 `RuntimeError`，自动回退 `cpu`
 
-这能保证“今天一定能跑完”，不因设备问题卡死。
-
----
-
-## 12.9 Day6 最小验收标准（执行版）
-1. `everyday_learning/day6/day6_handwrite.py` 断言通过
-2. 你能说清 `final loss / phase1 acc / phase2 acc / elapsed sec` 各自含义
-3. 能解释：为什么 `argmax(dim=1)` 就是分类预测
-4. 能解释：为什么这次是分类任务，不再用 MSELoss
+这样能保证“今天一定跑完”。
 
 ---
 
-## 12.10 Day6 常见报错
+## 12.18 Day6 常见报错与定位
+
 1. `ModuleNotFoundError: No module named 'torchvision'`
    - 解决：`/usr/bin/python3 -m pip install torchvision`
-2. 设备不一致报错
-   - 解决：`xb/yb/model` 都要在同一 device
-3. 精度不达标
-   - 先检查训练循环顺序是否正确
-   - 再检查是否真的训练了 2 个阶段
+2. 设备不一致错误
+   - 检查 `model/xb/yb` 是否都在同一 device
+3. 准确率不达标
+   - 先检查训练循环顺序
+   - 再检查是否确实跑了两阶段
 4. 速度慢
-   - CPU 慢是正常的，先跑通再优化
+   - CPU 慢是正常现象，先求跑通
 
 ---
 
-## 12.11 Day6 命令（你明天直接跑）
+## 12.19 Day6 验收标准（执行版）
+1. `everyday_learning/day6/day6_handwrite.py` 断言通过
+2. 你能解释：
+   - `logits` 是什么
+   - `CrossEntropyLoss` 为什么用于分类
+   - `argmax(dim=1)` 为什么能拿到预测类别
+3. 你能说清：
+   - `final loss`
+   - `phase1 acc`
+   - `phase2 acc`
+   - `elapsed sec`
+
+---
+
+## 12.20 Day6 命令（直接跑）
+
+环境检查：
+```bash
+/usr/bin/python3 "/Users/chenqingan/Library/Mobile Documents/com~apple~CloudDocs/ml-rookie/everyday_learning/day6/day6_env_check.py"
+```
 
 手写版：
 ```bash
@@ -1604,3 +2568,254 @@ Phase2（再冲刺）：
 ```bash
 /usr/bin/python3 "/Users/chenqingan/Library/Mobile Documents/com~apple~CloudDocs/ml-rookie/everyday_learning/day6/day6_solution.py"
 ```
+
+---
+
+## 13. 注释版附录（按你要求：语法 + 目的 + 为什么 + `.xxx` 功能）
+
+> 这一章专门给你“对照手写文件”用。  
+> 每段代码都带详细注释：
+> 1. 这行是什么语法
+> 2. 为什么这么写
+> 3. 目的是什么
+> 4. `.xxx` 方法在做什么
+
+## 13.1 先看：`.xxx` 到底是什么语法
+
+在 Python 里，点号 `.` 的作用是“访问对象的属性或方法”。
+
+例子：
+1. `text.lower()`
+   - `text` 是字符串对象
+   - `.lower` 是字符串的方法
+   - `()` 表示调用这个方法
+2. `x.to(device)`
+   - `x` 是张量对象
+   - `.to(...)` 是张量的方法
+   - 作用是迁移设备/转换类型
+
+你可以把 `对象.方法(参数)` 理解成：
+“让这个对象执行某个内置动作”。
+
+---
+
+## 13.2 Day3 注释版：`clean_text`
+
+```python
+import re  # 语法：导入模块；目的：使用正则替换 re.sub
+
+
+def clean_text(text):
+    # 语法：函数定义。参数 text 是输入字符串，return 是输出字符串
+
+    # 目的：统一大小写，减少词形分裂（Python/python）
+    # .lower()：字符串方法，返回全小写新字符串
+    text = text.lower()
+
+    # 目的：去掉 URL，避免链接污染文本
+    # re.sub(pattern, repl, string)：把匹配 pattern 的部分替换为 repl
+    # r"..." 是原始字符串，避免反斜杠转义干扰
+    text = re.sub(r"https?://\S+|www\.\S+", " ", text)
+
+    # 目的：只保留 a-z 和空白，其他符号/数字都替换成空格
+    # [^a-z\s]：^ 在 [] 内表示“非”；\s 表示空白字符
+    text = re.sub(r"[^a-z\s]", " ", text)
+
+    # 目的：空白归一化，压成单空格
+    # .split()：按任意空白切词（多个空格/Tab/换行都会处理）
+    # " ".join(list)：把词列表用单空格拼回字符串
+    text = " ".join(text.split())
+
+    # 语法：return 返回最终清洗结果
+    return text
+```
+
+---
+
+## 13.3 Day4 注释版：`clean_file`
+
+```python
+def clean_line(line):
+    # 目的：把一行文本做最小清洗（去首尾空白 + 归一化空白）
+    # .strip()：去掉首尾空白字符
+    # .split() + .join()：把内部多空白压成单空格
+    return " ".join(line.strip().split())
+
+
+def clean_file(input_path, output_path):
+    # 语法：try-except 异常处理框架；目的：出错时不崩溃
+    try:
+        # 语法：with open(...) as f，离开代码块自动关闭文件
+        with open(input_path, "r", encoding="utf-8") as f:
+            # .readlines()：读取所有行，返回列表，每个元素是一行字符串
+            lines = f.readlines()
+
+        cleaned_lines = []  # 语法：创建空列表，收集清洗后的行
+
+        # 语法：for 循环遍历每一行
+        for line in lines:
+            c = clean_line(line)
+
+            # 语法：if c；目的：过滤空行（空字符串在布尔上下文是 False）
+            if c:
+                # .append(x)：列表方法，把元素追加到末尾
+                cleaned_lines.append(c)
+
+        with open(output_path, "w", encoding="utf-8") as f:
+            for c in cleaned_lines:
+                # .write(str)：写入字符串；不会自动换行，所以手动 + "\n"
+                f.write(c + "\n")
+
+        return True  # 成功标记
+
+    except FileNotFoundError:
+        # 目的：专门处理文件不存在
+        return False
+
+    except Exception as e:
+        # e 是异常对象变量，保存具体错误信息
+        print("其他错误:", e)
+        return False
+```
+
+---
+
+## 13.4 Day5 注释版：最小训练循环
+
+```python
+import torch
+import torch.nn as nn
+
+
+# 语法：函数定义；目的：确定当前运算设备
+# torch.backends.mps.is_available()：检查 MPS 后端是否可用
+def get_device():
+    if torch.backends.mps.is_available():
+        return torch.device("mps")  # "mps" 必须是字符串设备名
+    return torch.device("cpu")
+
+
+# 构造训练数据 y = 2x + 1
+def make_data(device):
+    # torch.tensor(..., dtype=..., device=...)：创建张量并放到指定设备
+    x = torch.tensor([[1.0], [2.0], [3.0], [4.0], [5.0]], dtype=torch.float32, device=device)
+    y = 2 * x + 1
+    return x, y
+
+
+def train_linear(x, y, device, epochs=300, lr=0.05):
+    # nn.Linear(in_features, out_features)：线性层
+    model = nn.Linear(1, 1).to(device)  # .to(device)：把模型参数迁移到设备
+
+    loss_fn = nn.MSELoss()  # 回归任务常用均方误差
+    optimizer = torch.optim.SGD(model.parameters(), lr=lr)  # 优化器对象
+
+    final_loss = None
+    for epoch in range(epochs):
+        pred = model(x)              # 前向计算（forward）
+        loss = loss_fn(pred, y)      # 计算损失
+
+        optimizer.zero_grad()        # 清空上一步梯度（梯度默认会累加）
+        loss.backward()              # 反向传播，计算当前梯度
+        optimizer.step()             # 根据梯度更新参数
+
+        # loss.item()：把标量 Tensor 取成 Python 数值
+        final_loss = float(loss.item())
+
+    return model, final_loss
+
+
+def predict_one(model, device, x_value=4.0):
+    x_test = torch.tensor([[x_value]], dtype=torch.float32, device=device)
+
+    # with 语法 + no_grad：进入无梯度上下文，推理更省内存
+    with torch.no_grad():
+        y_pred = model(x_test)
+
+    return float(y_pred.item())
+```
+
+---
+
+## 13.5 Day6 注释版：MNIST 数据 + 训练 + 评估
+
+```python
+import torch
+import torch.nn as nn
+from torch.utils.data import DataLoader
+from torchvision import datasets, transforms
+
+
+# 1) 定义预处理规则
+# transforms.ToTensor()：把图像转成 Tensor，并把像素从 0~255 归一化到 0~1
+transform = transforms.ToTensor()
+
+# 2) 构造训练集 / 测试集对象
+# datasets.MNIST(...)：实例化数据集类
+# root：数据目录；train=True/False：训练集/测试集；download=True：无数据就下载
+train_ds = datasets.MNIST(root="data", train=True, transform=transform, download=True)
+test_ds = datasets.MNIST(root="data", train=False, transform=transform, download=True)
+
+# 3) 用 DataLoader 做批量读取
+# batch_size：每批样本数；shuffle=True 只建议训练集
+train_loader = DataLoader(train_ds, batch_size=128, shuffle=True)
+test_loader = DataLoader(test_ds, batch_size=512, shuffle=False)
+
+# 4) 模型定义
+# nn.Sequential(...)：顺序组合多个模块
+model = nn.Sequential(
+    nn.Flatten(),            # 把 [B,1,28,28] 拉平到 [B,784]
+    nn.Linear(28 * 28, 128),
+    nn.ReLU(),
+    nn.Linear(128, 10),      # 输出 10 类 logits（原始分数，不是概率）
+)
+
+# 5) 设备与损失/优化器
+device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
+model = model.to(device)
+loss_fn = nn.CrossEntropyLoss()   # 分类任务常用损失
+optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+
+# 6) 训练一个 epoch
+model.train()  # 训练模式
+for xb, yb in train_loader:  # 解包语法：每轮拿一批输入和标签
+    xb = xb.to(device)
+    yb = yb.to(device)
+
+    logits = model(xb)           # 前向输出 logits
+    loss = loss_fn(logits, yb)   # 计算分类损失
+
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+
+# 7) 评估准确率
+model.eval()  # 评估模式
+correct, total = 0, 0
+with torch.no_grad():
+    for xb, yb in test_loader:
+        xb = xb.to(device)
+        yb = yb.to(device)
+
+        logits = model(xb)
+
+        # argmax(dim=1)：按“类别维”取最大分数下标 = 预测类别
+        pred_label = logits.argmax(dim=1)
+
+        # (pred_label == yb)：逐元素比较对错
+        # .sum().item()：统计当前批次答对数量
+        correct += (pred_label == yb).sum().item()
+        total += yb.size(0)
+
+acc = 100.0 * correct / total  # 测试准确率百分比
+print("test acc:", acc)
+```
+
+---
+
+## 13.6 你写代码时怎么看注释（实战建议）
+
+1. 先看“目的”注释，知道这段要解决什么。  
+2. 再看“语法”注释，确认每行是不是你会写。  
+3. 最后看“.xxx 功能”注释，建立方法语义记忆。  
+4. 手写时先抄结构，再去掉注释闭卷重写一遍。
