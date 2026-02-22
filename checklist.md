@@ -12,8 +12,8 @@
       `/usr/bin/python3 "/Users/chenqingan/Library/Mobile Documents/com~apple~CloudDocs/ml-rookie/everyday_learning/day6/day6_handwrite.py"`
 - [1] 达标验收：`phase1 >= 92%` 且 `phase2 >= 95%`
 - [1] 记录 Day6 指标到 log：`final loss`、`phase1 test acc`、`phase2 test acc`、`elapsed sec`
-- [ ] 刷 1 道 LeetCode（Python3）
-- [ ] 复习 `my_leetcode_learning/wrongbook.md`（至少过 1/217/167 三块）
+- [1] 刷 1 道 LeetCode（Python3）
+- [1] 复习 `my_leetcode_learning/wrongbook.md`（至少过 1/217/167 三块）
 - [ ] 复盘 Day1-6 手写文件（闭卷口述训练流程 + 再看一遍关键函数）
 - [ ] 更新 `ml_learning_log.md`（Day6 模板完整填写）
 - [ ] （可选）收尾提交：`git add . && git commit -m "complete day6 full day run" && git push`
