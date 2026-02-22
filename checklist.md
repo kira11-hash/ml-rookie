@@ -1,23 +1,19 @@
 # Checklist（今天）
 
-> 日期基准：2026-02-21（今天）
+> 日期基准：2026-02-23
 
-## 1. 2.21 全日主线（Day6 一天打穿）
-- [1] 从头通读 `python_grammar.md`（重点 Day4/Day5/Day6：`##9`、`##10`、`##11`、`##12`）
-- [1] 读讲义过程中，把不懂点实时记下来并问我（至少问清再继续写）
-- [1] 运行 Day6 环境检查  
-      `/usr/bin/python3 "/Users/chenqingan/Library/Mobile Documents/com~apple~CloudDocs/ml-rookie/everyday_learning/day6/day6_env_check.py"`
-- [1] 完成 `everyday_learning/day6/day6_handwrite.py` 全部 TODO
-- [1] 跑通 Day6 手写脚本并通过断言  
-      `/usr/bin/python3 "/Users/chenqingan/Library/Mobile Documents/com~apple~CloudDocs/ml-rookie/everyday_learning/day6/day6_handwrite.py"`
-- [1] 达标验收：`phase1 >= 92%` 且 `phase2 >= 95%`
-- [1] 记录 Day6 指标到 log：`final loss`、`phase1 test acc`、`phase2 test acc`、`elapsed sec`
-- [1] 刷 1 道 LeetCode（Python3）
-- [1] 复习 `my_leetcode_learning/wrongbook.md`（至少过 1/217/167 三块）
-- [ ] 复盘 Day1-6 手写文件（闭卷口述训练流程 + 再看一遍关键函数）
-- [ ] 更新 `ml_learning_log.md`（Day6 模板完整填写）
-- [ ] （可选）收尾提交：`git add . && git commit -m "complete day6 full day run" && git push`
-- [1] Day7 启动预告：若今天全部完成，明天直接开王树森课程 + 天池 ItemCF 主线
+## 1.1 2.23 启动预告（明天执行，不是今天）
+- [ ] 先看 `ml_learning_log.md` 最后一段（确认本周约束：每周 5-10h、单日 <=2h）
+- [ ] 王树森推荐系统课学习 `60-90 分钟`（2倍速可）  
+      目标：先建立“推荐系统全景图（召回 / 排序 / 重排）”
+- [ ] 听课时做 5-10 条简短笔记（写到纸上或临时文档都行）
+- [ ] 用自己的话口述一次：推荐系统基本流程（召回 -> 排序 -> 重排，先说出框架即可）
+- [ ] LeetCode 1 题（Python3，建议数组/哈希/双指针类）
+- [ ] 题后按第2部分规则复盘（至少写 4 条）
+- [ ] 更新 `my_leetcode_learning/wrongbook.md`（补本题错误/思路/复杂度）
+- [ ] 更新 `ml_learning_log.md`（新增 2026-02-23 的学习记录）
+- [ ] （可选）收尾提交：`git add . && git commit -m "0223 recsys lecture + lc" && git push`
+- [ ] 若明日脑力透支：只完成“听课”或“做题”其中一项，也算合格（先建立节奏）
 
 ---
 
