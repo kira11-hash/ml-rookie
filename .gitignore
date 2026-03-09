@@ -1,0 +1,9 @@
+# macOS
+.DS_Store
+
+# Tianchi news recommendation raw data and generated artifacts
+news_rec/data_raw/
+news_rec/temp_results/
+
+# Local large/download logs under the Tianchi project
+news_rec/**/*.log

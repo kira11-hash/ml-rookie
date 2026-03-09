@@ -1,19 +1,28 @@
 # Checklist（今天）
 
-> 日期基准：2026-02-23
+> 日期基准：2026-02-25
 
-## 1.1 2.23 启动预告（明天执行，不是今天）
-- [ ] 先看 `ml_learning_log.md` 最后一段（确认本周约束：每周 5-10h、单日 <=2h）
-- [ ] 王树森推荐系统课学习 `60-90 分钟`（2倍速可）  
-      目标：先建立“推荐系统全景图（召回 / 排序 / 重排）”
-- [ ] 听课时做 5-10 条简短笔记（写到纸上或临时文档都行）
-- [ ] 用自己的话口述一次：推荐系统基本流程（召回 -> 排序 -> 重排，先说出框架即可）
-- [ ] LeetCode 1 题（Python3，建议数组/哈希/双指针类）
-- [ ] 题后按第2部分规则复盘（至少写 4 条）
-- [ ] 更新 `my_leetcode_learning/wrongbook.md`（补本题错误/思路/复杂度）
-- [ ] 更新 `ml_learning_log.md`（新增 2026-02-23 的学习记录）
-- [ ] （可选）收尾提交：`git add . && git commit -m "0223 recsys lecture + lc" && git push`
-- [ ] 若明日脑力透支：只完成“听课”或“做题”其中一项，也算合格（先建立节奏）
+## 1.1 2.25 今日计划（<= 2h，主线：看懂 baseline）
+- [ ] `10 分钟`：先看 `ml_learning_log.md` 里 2.24 的 baseline 跑通记录（回忆 pipeline）
+- [ ] `70-95 分钟`：看懂 baseline 骨架（只看主流程与关键函数输入输出）
+  - `main()`
+  - `get_all_click_df()`
+  - `get_user_item_time()`
+  - `itemcf_sim()`
+  - `item_based_recommend()`
+  - `build_recall_df()`
+  - `submit()`
+  - 验收：能口述“数据 -> i2i -> 召回 -> 提交”这条链路
+- [ ] `10-15 分钟`：写 baseline 骨架笔记（每个函数一句话：输入/输出/作用）
+- [ ] `5-10 分钟`：更新 `ml_learning_log.md`（记录 baseline 理解进度）
+- [ ] 若仍有精力（可选）：补 `submit()` 函数细读，不新增 LeetCode
+
+## 1.2 备注（承接 2.24）
+- [x] 已完成：`fun-rec 6.2 baseline` 本地跑通（ItemCF baseline）
+- [x] 已完成：生成提交文件 `temp_results/itemcf_baseline_02-24.csv`
+- [x] 已完成：理解 `all_click_df / recall_df / tst_recall` 的 shape 含义
+- [x] 已完成：明确当前脚本是“召回主导 + 简单排序”，不是完整粗排/精排/重排链路
+- [ ] 2.24 当晚单独做 LeetCode：`26. 删除有序数组中的重复项`
 
 ---
 
