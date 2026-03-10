@@ -505,9 +505,32 @@ freq[word] = freq.get(word, 0) + 1
 ```
 
 拆开理解：
-1. `freq.get(word, 0)`：取当前单词已有次数，没有就当 `0`。
-2. `+ 1`：出现一次就加一。
-3. 写回 `freq[word]`。
+1. `for word in words:` 里循环出来的不是“字典的 key”，而是列表 `words` 里的一个个元素。  
+   例如 `words = ["python", "is", "python"]`，那 `word` 会依次取到 `"python"`、`"is"`、`"python"`。
+2. `freq[word]`：把当前这个单词当作字典的 key。  
+   例如当前 `word = "python"`，那 `freq[word]` 就等价于 `freq["python"]`。
+3. `freq.get(word, 0)`：去字典里取这个 key 对应的 value。  
+   - 如果 key 已存在，就返回对应的 value。  
+   - 如果 key 不存在，就返回默认值 `0`。  
+   所以 `freq.get(word, 0)` 取到的是“当前单词已经出现过多少次”。
+4. `+ 1`：当前又看到这个单词一次，所以次数加一。
+5. `写回 freq[word]`：把更新后的次数写回这个 key 对应的 value。
+
+也就是说，这句代码的本质是：
+- 循环取出列表元素 `word`
+- 把这个元素当作字典的 key
+- 更新这个 key 对应的 value（频次）
+
+可以把它写成更啰嗦的等价版本：
+```python
+old_count = freq.get(word, 0)   # 取到的是 value，不是 key
+new_count = old_count + 1
+freq[word] = new_count
+```
+
+补充：
+- `dict.get(key, default)` 不是循环专用语法。
+- 只是“取旧值再加一”这种计数动作通常要对很多元素重复做，所以最常见地写在 `for` 循环里。
 
 ### 3.3.5 实际过程演示
 ```python
@@ -523,6 +546,20 @@ for word in words:
 1. 读到 `"python"` -> `{'python': 1}`
 2. 读到 `"is"` -> `{'python': 1, 'is': 1}`
 3. 再读到 `"python"` -> `{'python': 2, 'is': 1}`
+
+再用“key / value”视角看一遍：
+1. 第一次循环，`word = "python"`  
+   - key 是 `"python"`
+   - `freq.get("python", 0)` 取到的 value 是 `0`
+   - 更新后变成 `freq["python"] = 1`
+2. 第二次循环，`word = "is"`  
+   - key 是 `"is"`
+   - `freq.get("is", 0)` 取到的 value 是 `0`
+   - 更新后变成 `freq["is"] = 1`
+3. 第三次循环，`word = "python"`  
+   - key 还是 `"python"`
+   - `freq.get("python", 0)` 取到的 value 是 `1`
+   - 更新后变成 `freq["python"] = 2`
 
 ### 3.3.6 为什么 `word` 不加引号
 1. `word`（不加引号）是变量，值会变化：`"python"`、`"is"`...
@@ -627,13 +664,124 @@ cleaned_text = "".join(cleaned_chars)
 为什么要把符号替换为空格而不是删掉？  
 为了避免单词粘连。比如 `"hi,python"` 变成 `"hi python"` 更安全。
 
+为什么先要：
+```python
+cleaned_text = "".join(cleaned_chars)
+```
+再要：
+```python
+words = cleaned_text.split()
+```
+
+因为这是两个不同步骤：
+
+1. `cleaned_chars` 是“字符列表”，不是字符串  
+   例如：
+   ```python
+   ['p', 'y', 't', 'h', 'o', 'n', ' ', 'i', 's']
+   ```
+2. `join()` 的作用是：把字符列表重新拼成一个完整字符串  
+   ```python
+   cleaned_text = "".join(cleaned_chars)
+   # "python is"
+   ```
+3. `split()` 的作用是：再把这个完整字符串按空白切成“词列表”  
+   ```python
+   words = cleaned_text.split()
+   # ['python', 'is']
+   ```
+
+所以它们分别是：
+- `join`：字符列表 -> 字符串
+- `split`：字符串 -> 词列表
+
+为什么不能直接写：
+```python
+words = cleaned_chars.split()
+```
+
+因为：
+- `split()` 是字符串的方法
+- `cleaned_chars` 是 `list`
+- `list` 没有 `.split()` 这个方法
+
+完整流程可以记成：
+1. 逐字符清洗，得到 `cleaned_chars`
+2. `join` 成干净字符串 `cleaned_text`
+3. `split` 成单词列表 `words`
+
 ### 3.5.3 `split()`：按空白切词
 ```python
 s = "i   love   python"
 print(s.split())  # ['i', 'love', 'python']
 ```
 
-`split()` 默认会自动处理多个空格。
+`split()` 的作用是：
+- 把一个字符串拆成一个个小字符串
+- 返回一个 `list`
+
+最常见的理解方式：
+- `split()`：把“整句话”切成“一个个词”
+- `join()`：把“一个个词”再拼回一句话
+
+#### 不写参数：默认按空白切
+```python
+text = "python   is\nfun"
+words = text.split()
+print(words)  # ['python', 'is', 'fun']
+```
+
+这里的“空白”包括：
+1. 空格
+2. Tab
+3. 换行
+
+特点：
+1. 连续多个空格会自动当成一个分隔符
+2. 不会把空格本身保留下来
+3. 返回的是新列表，不会修改原字符串
+
+#### 写参数：按指定符号切
+```python
+text = "a,b,c"
+parts = text.split(",")
+print(parts)  # ['a', 'b', 'c']
+```
+
+这时的意思是：
+- 遇到逗号 `,` 就切开
+
+#### 在词频统计里的作用
+前面我们先把文本清洗成只包含字母和空格的字符串：
+```python
+cleaned_text = "python is fun python"
+```
+
+然后：
+```python
+words = cleaned_text.split()
+print(words)  # ['python', 'is', 'fun', 'python']
+```
+
+这样你才可以继续写：
+```python
+for word in words:
+    freq[word] = freq.get(word, 0) + 1
+```
+
+#### `split()` 会不会改掉原字符串？
+不会。
+
+```python
+text = "python is fun"
+words = text.split()
+print(text)   # python is fun
+print(words)  # ['python', 'is', 'fun']
+```
+
+原因是：
+- 字符串是不可变对象
+- `split()` 返回的是一个新列表
 
 ---
 
@@ -1015,6 +1163,90 @@ text = re.sub(r"https?://\S+|www\.\S+", " ", text)
 2. 也匹配 `www.xxx...`
 3. 用空格替换，避免单词粘连
 
+把模式拆开看：
+```python
+https?://\S+|www\.\S+
+```
+
+中间的 `|` 表示“或者”，所以整体在匹配两类链接：
+1. `http://...` 或 `https://...`
+2. `www....`
+
+#### 第一部分：`https?://\S+`
+1. `http`
+   - 就是字面匹配这四个字符：`http`
+2. `s?`
+   - `?` 的意思是：前面的模式出现 `0 次或 1 次`
+   - 所以 `s?` 表示：`s` 可以有，也可以没有
+   - 因此 `https?` 可以同时匹配：
+     - `http`
+     - `https`
+3. `://`
+   - 就是字面匹配冒号和两个斜杠
+4. `\S+`
+   - `\S` 表示“非空白字符”
+   - 空白字符包括：空格、Tab、换行
+   - `+` 表示前面的模式出现 `1 次或多次`
+   - 所以 `\S+` 表示：后面连续的一串非空白字符
+
+合起来：
+```python
+https?://\S+
+```
+表示匹配：
+- `http://abc.com`
+- `https://openai.com/docs`
+- `https://a.com/x?id=1`
+
+#### 第二部分：`www\.\S+`
+1. `www`
+   - 就是字面匹配 `www`
+2. `\.`
+   - 这里重点要记住：正则里的 `.` 默认不是“点号”，而是“任意单个字符”
+   - 所以如果你真的想匹配字符 `.`，必须写成 `\.`
+   - 因此 `www\.` 表示匹配真正的：
+     - `www.`
+3. `\S+`
+   - 同前面一样，表示后面连续的一串非空白字符
+
+合起来：
+```python
+www\.\S+
+```
+表示匹配：
+- `www.baidu.com`
+- `www.openai.com/docs`
+- `www.abc.cn/test?id=1`
+
+#### 重点符号总结
+1. `?`
+   - 含义：前一个模式可有可无（`0 次或 1 次`）
+   - 例子：`https?` 同时匹配 `http` 和 `https`
+2. `\.`
+   - 含义：匹配真正的点号 `.`
+   - 原因：正则里的 `.` 默认表示“任意单个字符”，不是字面上的点
+
+#### 实际例子
+```python
+text = "See https://openai.com or www.baidu.com now"
+text = re.sub(r"https?://\S+|www\.\S+", " ", text)
+print(text)
+```
+
+结果大致会变成：
+```python
+"See   or   now"
+```
+
+所以后面通常还会接：
+```python
+text = " ".join(text.split())
+```
+把多余空格压成一个，得到：
+```python
+"See or now"
+```
+
 ### 8.4.2 去非字母字符
 ```python
 text = re.sub(r"[^a-z\s]", " ", text)
@@ -1024,6 +1256,162 @@ text = re.sub(r"[^a-z\s]", " ", text)
 2. `a-z` 表示小写字母
 3. `\s` 表示空白字符（空格、Tab、换行）
 4. 整体表示：不是字母/空白的都替换为空格
+
+这里的 `[]` 非常关键。  
+它不是 Python 里的列表/索引方括号，而是正则里的“字符类（character class）”。
+
+#### `[]` 在正则里是什么意思
+写法：
+```python
+[...]
+```
+
+意思：
+- 这里面定义的是“一组字符规则”
+- 表示“匹配其中任意一个字符”
+
+例如：
+```python
+[abc]
+```
+表示匹配：
+- `a`
+- 或 `b`
+- 或 `c`
+
+所以：
+```python
+[a-z\s]
+```
+表示匹配一个字符，只要它满足下面任意一个条件就行：
+1. 是 `a-z` 范围里的小写字母
+2. 是空白字符 `\s`
+
+也就是说，在 `[]` 里面，并排写出来默认就是“并列的或（or）”关系。
+
+#### 为什么 `a-z` 能表示“从 a 到 z”
+因为在字符类 `[]` 里面：
+- `-` 放在两个字符中间时，表示“范围（range）”
+
+所以：
+```python
+a-z
+```
+表示：
+- 从 `a` 到 `z` 的所有小写字母
+
+类似的还有：
+```python
+0-9   # 数字
+A-Z   # 大写字母
+```
+
+注意：
+- `-` 只有在 `[]` 里、并且夹在两个字符中间时，才主要表示范围
+- 如果放在开头或结尾，通常就当普通字符 `-`
+
+#### 为什么 `a-z` 后面还能紧跟 `\s`
+因为在 `[]` 里面，并排写多个规则，本来就表示：
+- 只要满足其中任意一个就行
+
+所以：
+```python
+[a-z\s]
+```
+不是理解成：
+- `a` 到 `z` 到空白
+
+而是理解成：
+- 一个字符，只要是“小写字母”或“空白字符”都算匹配
+
+这里的 `\s` 是正则缩写，表示空白字符：
+- 空格
+- Tab
+- 换行
+
+#### 为什么前面加 `^` 不需要括号
+因为当 `^` 出现在 `[]` 里面并且放在最前面时，它默认就是对“整个字符类”取反。
+
+也就是说：
+```python
+[a-z\s]
+```
+表示：
+- 字母或空白
+
+而：
+```python
+[^a-z\s]
+```
+表示：
+- 不属于“字母或空白”这个整体集合的字符
+
+所以它的逻辑不是：
+- 不是字母，或者是空白
+
+而是：
+- 不是（字母或空白）
+
+根据逻辑等价，它其实就是：
+- 不是字母，并且不是空白
+
+所以这里不需要再加括号，因为 `[]` 本身就已经把这整个集合包起来了。
+
+#### 一个对比例子
+```python
+[a-z]
+```
+表示：
+- 任意一个小写字母
+
+```python
+[a-z0-9]
+```
+表示：
+- 任意一个小写字母或数字
+
+```python
+[a-z\s]
+```
+表示：
+- 任意一个小写字母或空白
+
+```python
+[^a-z\s]
+```
+表示：
+- 任意一个“不是小写字母、也不是空白”的字符
+
+#### 实际清洗时会匹配到什么
+```python
+text = "python, is fun! 123"
+text = re.sub(r"[^a-z\s]", " ", text)
+```
+
+这里会被替换成空格的有：
+- `,`
+- `!`
+- `1`
+- `2`
+- `3`
+
+因为这些字符都“不属于字母或空白”。
+
+而这些不会被替换：
+- `p`
+- `y`
+- `t`
+- 空格
+
+#### 关于 `^` 再补一个重要区别
+1. 在 `[]` 里且放最前面：
+   - `^` 表示“取反”
+   - 例如：`[^a-z]`
+2. 在 `[]` 外面：
+   - `^` 常表示“匹配字符串开头”
+   - 例如：`^abc`
+
+所以 `^` 的意思和位置强相关，要分清。
 
 ---
 
@@ -1517,6 +1905,151 @@ model = nn.Linear(1, 1)
 pred = model(x)
 ```
 
+#### `import torch.nn as nn` 是什么意思
+```python
+import torch.nn as nn
+```
+
+意思是：
+1. 导入 PyTorch 里的子模块 `torch.nn`
+2. 给它起一个简写名字 `nn`
+
+这里的 `nn` 可以理解成：
+- neural network（神经网络）
+
+这个模块里常见的东西有：
+- `nn.Linear`
+- `nn.ReLU`
+- `nn.Sequential`
+- `nn.MSELoss`
+- `nn.CrossEntropyLoss`
+
+所以后面你写：
+```python
+nn.Linear(1, 1)
+```
+本质上等价于：
+```python
+torch.nn.Linear(1, 1)
+```
+
+只是前者更短、更常见。
+
+#### `nn.Linear(1, 1)` 里的两个 `1` 是什么意思
+`nn.Linear(in_features, out_features)` 的语法是：
+
+```python
+nn.Linear(输入特征数, 输出特征数)
+```
+
+所以：
+```python
+nn.Linear(1, 1)
+```
+表示：
+1. 输入维度是 `1`
+2. 输出维度也是 `1`
+
+也就是：
+- 每个样本输入一个数
+- 模型输出一个数
+
+例如：
+```python
+x = [[1.0], [2.0], [3.0]]
+```
+
+这里每个样本都只有 `1` 个特征，所以输入维度是 `1`。  
+模型输出也只预测 `1` 个值，所以输出维度也是 `1`。
+
+#### 对应到公式里是什么
+当输入维度 = 1，输出维度 = 1 时，这层就很像：
+```python
+y_pred = w * x + b
+```
+
+其中：
+- `w`：权重
+- `b`：偏置
+
+它们都是模型里可训练的参数。
+
+#### 如果不是 `1, 1` 会怎样
+例如：
+```python
+nn.Linear(3, 2)
+```
+
+表示：
+1. 每个样本输入 `3` 个特征
+2. 输出 `2` 个数
+
+你可以把它理解成：
+- 输入是一行 3 个数
+- 经过线性层后，输出变成一行 2 个数
+
+#### 你现在这节为什么用 `1, 1`
+因为 Day5 的 warmup 是最简单的线性回归例子：
+- 一个自变量 `x`
+- 预测一个因变量 `y`
+
+所以最自然就是：
+```python
+nn.Linear(1, 1)
+```
+
+再强调一遍，第一个 `1` 的本质是：
+- 每个样本只有 `1` 个输入特征
+- 也就是每一行只有 `1` 个数
+
+但这不代表只能有 `1` 行。
+
+例如：
+```python
+x = [[1.0], [2.0], [3.0]]
+```
+
+这里：
+1. 一共有 `3` 行，表示 `3` 个样本
+2. 每一行都只有 `1` 个数，所以输入维度是 `1`
+
+如果把它看成 shape，可以理解为：
+```python
+(3, 1)
+```
+
+含义是：
+1. `3`：样本数（行数）
+2. `1`：每个样本的特征数（列数）
+
+所以 `nn.Linear(1, 1)` 里的第一个 `1` 不是在限制“总共有几行”，而是在限制：
+- 每一行输入必须有 `1` 个特征
+
+对比一下：
+
+输入维度是 `1`：
+```python
+x = [
+    [1.0],
+    [2.0],
+    [3.0]
+]
+```
+
+输入维度是 `2`：
+```python
+x = [
+    [1.0, 10.0],
+    [2.0, 20.0],
+    [3.0, 30.0]
+]
+```
+
+如果每行有 `2` 个数，那对应的线性层就应该写成：
+```python
+nn.Linear(2, 1)
+```
+
 这里 `w` 和 `b` 是可训练参数，初始是随机值。  
 训练的目标就是不断调整 `w,b`，让预测更接近真值。
 
@@ -1529,6 +2062,204 @@ pred = model(x)
 loss_fn = nn.MSELoss()
 loss = loss_fn(pred, y)
 ```
+
+#### `loss_fn = nn.MSELoss()` 是在干什么
+这句不是在喂数据，而是在：
+- 创建一个“计算均方误差”的损失函数对象
+
+你可以把它理解成：
+- 先定义好“误差怎么算”的规则
+- 后面再拿这个规则去比较 `pred` 和 `y`
+
+这里的 `MSE` 全称是：
+- Mean Squared Error
+- 中文：均方误差
+
+#### `loss = loss_fn(pred, y)` 是在干什么
+这句才是真正把数据喂进去：
+- `pred`：模型预测值
+- `y`：真实值
+
+然后损失函数会计算：
+- 预测和真实到底差了多少
+
+虽然这里形式上只传了两个参数：
+```python
+pred, y
+```
+但这两个通常都不是单个数，而是张量（tensor），里面可以有很多样本、很多元素。
+
+#### MSE 的本质公式
+\[
+MSE = \frac{1}{n}\sum (pred - y)^2
+\]
+
+也就是三步：
+1. 先算所有误差：`pred - y`
+2. 每个误差都平方
+3. 最后取平均
+
+一句话版：
+- 预测值和真实值的差，平方后，再求平均
+
+#### 为什么要平方
+平方有两个作用：
+1. 防止正负误差互相抵消
+   - `+1` 和 `-1` 平方后都会变成 `1`
+2. 大误差会被惩罚得更重
+   - 差 `3` 平方后是 `9`
+   - 差 `1` 平方后是 `1`
+
+#### 一个最简单的实际例子
+假设：
+```python
+pred = [[2.0], [4.0], [6.0]]
+y    = [[1.0], [5.0], [7.0]]
+```
+
+这表示有 `3` 个样本：
+1. 第1个样本：预测 `2.0`，真实 `1.0`
+2. 第2个样本：预测 `4.0`，真实 `5.0`
+3. 第3个样本：预测 `6.0`，真实 `7.0`
+
+第一步，逐元素相减：
+```python
+pred - y = [[1.0], [-1.0], [-1.0]]
+```
+
+第二步，逐元素平方：
+```python
+[[1.0], [1.0], [1.0]]
+```
+
+第三步，取平均：
+```python
+(1.0 + 1.0 + 1.0) / 3 = 1.0
+```
+
+所以这次的 MSE loss 就是：
+```python
+1.0
+```
+
+#### 为什么只看 `pred` 和 `y`，不直接看 `x`
+因为 loss 的工作不是处理原始输入 `x`，而是：
+- 比较模型输出 `pred`
+- 和真实答案 `y`
+
+流程是：
+1. `x` 先喂给模型
+2. 模型算出 `pred`
+3. 损失函数再用 `pred` 和 `y` 算误差
+
+所以 loss 不直接拿 `x` 算。
+
+#### `pred` 和 `y` 可以有很多元素
+例如一个 batch 里可以有很多样本：
+```python
+pred = [[2.0], [4.0], [6.0], [8.0]]
+y    = [[1.0], [5.0], [7.0], [10.0]]
+```
+
+这时 `loss_fn(pred, y)` 算的是：
+- 这一整个 batch 的平均均方误差
+
+再例如每个样本不止输出 1 个数：
+```python
+pred = [[2.0, 3.0],
+        [4.0, 5.0]]
+
+y    = [[1.0, 1.0],
+        [7.0, 5.0]]
+```
+
+这时也能算，逻辑一样：
+1. 每个位置做差
+2. 每个位置平方
+3. 对所有元素取平均
+
+前提通常是：
+- `pred` 和 `y` 的 shape 要一致，或者至少能对齐
+
+#### 默认为什么是“平均”
+```python
+nn.MSELoss()
+```
+默认相当于：
+```python
+nn.MSELoss(reduction="mean")
+```
+
+意思是：
+- 先算所有位置的平方误差
+- 再取平均
+
+所以最后得到的是一个标量 loss。
+
+如果写：
+```python
+nn.MSELoss(reduction="sum")
+```
+就是求和，不取平均。
+
+如果写：
+```python
+nn.MSELoss(reduction="none")
+```
+就是不汇总，保留每个位置各自的误差。
+
+#### 一个 PyTorch 风格的小例子
+```python
+import torch
+import torch.nn as nn
+
+pred = torch.tensor([[2.0], [4.0], [6.0]])
+y = torch.tensor([[1.0], [5.0], [7.0]])
+
+loss_fn = nn.MSELoss()
+loss = loss_fn(pred, y)
+
+print(loss)         # tensor(1.)
+print(loss.item())  # 1.0
+```
+
+#### 为什么 `loss` 是 tensor，不是普通数字
+从数学上说，`loss` 确实就是一个数。  
+但在 PyTorch 里，它通常不是普通 Python 数，而是：
+- 一个只包含 `1` 个元素的 tensor
+- 也叫“标量张量（scalar tensor）”
+
+原因有两个：
+1. `pred` 和 `y` 本身是 tensor，所以算出来的结果自然还是 tensor
+2. 更重要的是：PyTorch 需要让 `loss` 保留计算图信息，后面才能做：
+   ```python
+   loss.backward()
+   ```
+   也就是自动求导、反向传播
+
+如果 `loss` 一开始就变成普通数字，例如：
+```python
+1.0
+```
+那它就没法继续记录：
+- 这个数是怎么从 `pred` 算出来的
+- 应该如何把梯度往前传回模型参数
+
+所以训练时我们通常保留：
+```python
+loss
+```
+让它继续是 tensor。
+
+而当你只是想打印、记录数值时，再用：
+```python
+loss.item()
+```
+把这个“单元素 tensor”里的数取出来，变成普通 Python 数。
+
+所以：
+- `loss`：保留为 tensor，供 `backward()` 使用
+- `loss.item()`：提取普通数值，供打印和记录使用
 
 直观理解：预测值和真实值差得越远，loss 越大。  
 训练就是让 loss 越来越小。
@@ -2146,6 +2877,99 @@ data_dir.mkdir(parents=True, exist_ok=True)
    - 第 2 行：在该目录下定义 `data_dir = base_dir/data`  
    - 第 3 行：确保 `data_dir` 这个目录一定存在（不存在就创建）
 
+#### 再来一个“逐步拆解版”
+```python
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
+DATA_DIR = BASE_DIR / "data"
+```
+
+你可以按下面顺序理解：
+
+1. `__file__`
+   - Python 的内置变量，表示当前脚本文件的路径。
+   - 例如，假设脚本在：
+     ```python
+     /home/user/project/main.py
+     ```
+   - 那么：
+     ```python
+     print(__file__)
+     ```
+     可能打印：
+     ```python
+     "main.py"
+     ```
+     或：
+     ```python
+     "/home/user/project/main.py"
+     ```
+   - 取决于你怎么运行脚本，所以它一开始可能是相对路径。
+
+2. `Path(__file__)`
+   - 把字符串路径包装成 `Path` 对象。
+   - 这样就能用面向对象的方式操作路径，而不是手写字符串。
+   - 例如：
+     ```python
+     Path("main.py")
+     # PosixPath('main.py')
+     ```
+
+3. `.resolve()`
+   - 把路径变成绝对路径，并解析掉 `.`、`..`、符号链接等。
+   - 例如：
+     ```python
+     Path("main.py").resolve()
+     # PosixPath('/home/user/project/main.py')
+     ```
+     ```python
+     Path("../foo/bar.py").resolve()
+     # PosixPath('/home/user/foo/bar.py')
+     ```
+
+4. `.parent`
+   - 取父目录，也就是去掉最后一级文件名。
+   - 例如：
+     ```python
+     Path("/home/user/project/main.py").parent
+     # PosixPath('/home/user/project')
+     ```
+
+5. `/` 运算符
+   - `Path` 重载了 `/` 运算符，用来拼接路径，替代 `os.path.join()`。
+   - 例如：
+     ```python
+     BASE_DIR / "data"
+     ```
+     等价于：
+     ```python
+     os.path.join(BASE_DIR, "data")
+     ```
+   - 结果大致是：
+     ```python
+     PosixPath('/home/user/project/data')
+     ```
+   - 还能继续拼：
+     ```python
+     BASE_DIR / "data" / "train.csv"
+     # PosixPath('/home/user/project/data/train.csv')
+     ```
+
+完整流程图：
+```python
+__file__                    -> "main.py"
+Path(__file__)              -> Path("main.py")
+Path(__file__).resolve()    -> Path("/home/user/project/main.py")
+    .parent                 -> Path("/home/user/project")
+    / "data"                -> Path("/home/user/project/data")
+```
+
+一句话总结：
+- `Path(__file__).resolve().parent` 的作用是：获取“当前脚本所在目录”的绝对路径
+- 然后再用 `/` 拼出数据目录
+- 这样不管你从哪里运行脚本，路径都更稳定，不容易写错
+
 ### 12.4.2 耗时语法
 ```python
 start = time.perf_counter()
@@ -2251,9 +3075,30 @@ test_ds = datasets.MNIST(root="data", train=False, transform=transform, download
 
 1. 左边 `transform`：你自己定义的变量名。  
 2. 右边 `transforms.ToTensor()`：调用 torchvision 里的函数，返回一个“可调用的预处理对象”。  
-3. 后面传 `transform=transform` 时，就会对每个样本自动执行这个预处理。
+3. 这一步还没有真的处理任何图片，它只是先把“以后怎么处理图片”这个规则定义好。  
+4. 后面传 `transform=transform` 时，就会对每个样本自动执行这个预处理。
 
 一句话：先把“图像 -> 张量”的规则存到 `transform` 里，后面复用。
+
+更直白地说：
+- `transform = transforms.ToTensor()`：先造一个“处理器”
+- `dataset(..., transform=transform)`：把这个处理器挂到数据集上
+- 以后每次从数据集里取样本时，这个处理器都会自动运行
+
+例如：
+```python
+img, label = train_ds[0]
+```
+
+这时发生的是：
+1. 先从 MNIST 原始数据里取出第 `0` 张图
+2. 再自动执行 `transform(img)`
+3. 最终返回已经转成 Tensor 的图片
+
+所以 `transform` 不是“立刻把所有图片一次性处理完”，而是：
+- 取一个样本
+- 处理一个样本
+- 按需执行
 
 ### 12.7.2 第 2 行：`train_ds = datasets.MNIST(...)`
 这行是“构造训练集对象”。
@@ -2348,9 +3193,10 @@ print(datasets.MNIST.__module__)         # 类所属模块
 
 ## 12.8 `transforms.ToTensor()` 在做什么
 
-作用是两步：
+`transforms.ToTensor()` 的作用可以拆成 3 件事：
 1. 把图像对象转成 PyTorch Tensor。
-2. 像素值从 `0~255` 归一化到 `0~1`。
+2. 把像素值从 `0~255` 归一化到 `0~1`。
+3. 把图像排布调整成 PyTorch 常用格式（通常是 `C x H x W`）。
 
 例子：
 1. 像素 `0 -> 0.0`
@@ -2358,8 +3204,43 @@ print(datasets.MNIST.__module__)         # 类所属模块
 3. 像素 `255 -> 1.0`
 
 为什么这么做：
-1. 数值范围更稳定。
-2. 训练更容易收敛。
+1. 数值范围更稳定，不会一上来就是 `0~255` 这种较大的尺度。
+2. 神经网络训练更稳，优化器更新参数时不容易因为输入尺度太大而抖动。
+3. PyTorch 模型更习惯吃 Tensor，而不是原始图片对象。
+4. 卷积层默认按 `C x H x W` 这种格式处理图像。
+
+你可以把“归一化到 `0~1`”理解成最基础的一步数值整理：
+- 原始像素 `0~255` 的跨度比较大
+- 先压到 `0~1`，模型更容易训练
+
+所以大多数图像任务，至少都会做某种形式的归一化。  
+`ToTensor()` 做的是最常见的第一步。
+
+但要注意：
+- `ToTensor()` 不等于“所有图像预处理都做完了”
+- 它只是“转 Tensor + 基础归一”
+
+如果后面还要更进一步标准化，常见写法是：
+```python
+transform = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize(mean, std),
+])
+```
+
+这里：
+1. `Compose([...])`：把多个预处理步骤串起来
+2. 先 `ToTensor()`
+3. 再 `Normalize(mean, std)`
+
+所以以后你看到 `transform`，要先问自己两件事：
+1. 这个 `transform` 里一共有几步？
+2. `ToTensor()` 是不是只是其中一步？
+
+一句话总结：
+- `transform`：预处理规则变量
+- `ToTensor()`：最基础的图像预处理步骤
+- `transform=transform`：取样本时自动执行这套规则
 
 ---
 
@@ -2437,6 +3318,356 @@ model = nn.Sequential(
 1. 真值类别是 2，模型给真值类概率高 -> loss 小。
 2. 真值类别概率很低 -> loss 大（惩罚重）。
 
+### 12.12.1 数学上到底怎么算
+假设一个样本有 `C` 个类别，模型输出一组原始分数（logits）：
+
+\[
+\mathbf{z} = [z_1, z_2, \dots, z_C]
+\]
+
+这里：
+1. `logits` 不是概率
+2. 每个分数可以是正数、负数或 0
+3. 真实标签记作 \(y\)，表示“正确类别编号”
+
+#### 第一步：先做 softmax，把 logits 变成概率
+对第 \(i\) 类，概率定义为：
+
+\[
+p_i = \frac{e^{z_i}}{\sum_{j=1}^{C} e^{z_j}}
+\]
+
+作用：
+1. 所有概率都变成正数
+2. 所有类别概率加起来等于 1
+
+#### 第二步：只看真实类别的概率
+如果真实类别是 \(y\)，那我们最关心的是：
+
+\[
+p_y
+\]
+
+也就是：
+- 模型给“正确类别”分了多少概率
+
+#### 第三步：取负对数，得到交叉熵损失
+单个样本的损失定义为：
+
+\[
+L = -\log(p_y)
+\]
+
+把 softmax 代进去，可以写成：
+
+\[
+L = -\log \left(\frac{e^{z_y}}{\sum_{j=1}^{C} e^{z_j}}\right)
+\]
+
+进一步化简：
+
+\[
+L = -z_y + \log\left(\sum_{j=1}^{C} e^{z_j}\right)
+\]
+
+你现在先记住最核心的版本就够了：
+
+\[
+L = -\log(p_y)
+\]
+
+一句话：
+- 正确类别概率越高，loss 越小
+- 正确类别概率越低，loss 越大
+
+### 12.12.2 为什么这样定义合理
+如果真实类别概率很大，比如：
+
+\[
+p_y = 0.9
+\]
+
+那么：
+
+\[
+L = -\log(0.9) \approx 0.105
+\]
+
+loss 很小。
+
+如果真实类别概率很小，比如：
+
+\[
+p_y = 0.1
+\]
+
+那么：
+
+\[
+L = -\log(0.1) \approx 2.303
+\]
+
+loss 很大。
+
+所以交叉熵会强烈惩罚：
+- 把正确类别概率压得很低的情况
+
+### 12.12.3 一个详细例子
+假设是 3 分类问题，模型输出 logits：
+
+\[
+\mathbf{z} = [2.0,\ 1.0,\ 0.1]
+\]
+
+真实类别是第 1 类（按 Python 0-based，下标就是 `0`）。
+
+#### 第一步：算 softmax
+先算指数：
+
+\[
+e^{2.0} \approx 7.389
+\]
+\[
+e^{1.0} \approx 2.718
+\]
+\[
+e^{0.1} \approx 1.105
+\]
+
+分母：
+
+\[
+7.389 + 2.718 + 1.105 = 11.212
+\]
+
+所以三个类别概率分别是：
+
+\[
+p_1 = \frac{7.389}{11.212} \approx 0.659
+\]
+\[
+p_2 = \frac{2.718}{11.212} \approx 0.242
+\]
+\[
+p_3 = \frac{1.105}{11.212} \approx 0.099
+\]
+
+#### 第二步：只取真实类别概率
+真实类别是第 1 类，所以：
+
+\[
+p_y = 0.659
+\]
+
+#### 第三步：算 loss
+
+\[
+L = -\log(0.659) \approx 0.417
+\]
+
+这就是这个样本的交叉熵损失。
+
+如果模型分得很离谱，例如真实类别概率只有：
+
+\[
+p_y = 0.04
+\]
+
+那么：
+
+\[
+L = -\log(0.04) \approx 3.219
+\]
+
+loss 就会大很多。
+
+### 12.12.4 batch 的情况
+如果一个 batch 有 \(N\) 个样本，每个样本都有一个损失 \(L_n\)，那默认通常会取平均：
+
+\[
+L_{\text{batch}} = \frac{1}{N}\sum_{n=1}^{N} L_n
+\]
+
+所以你在 PyTorch 里看到的：
+```python
+loss = loss_fn(logits, yb)
+```
+通常表示：
+- 这一个 batch 的平均交叉熵损失
+
+### 12.12.5 为什么 PyTorch 里不手动先 softmax
+在 PyTorch 里常写：
+
+```python
+loss_fn = nn.CrossEntropyLoss()
+loss = loss_fn(logits, yb)
+```
+
+这里传进去的是：
+1. `logits`
+2. 不是 `softmax(logits)`
+
+原因是：
+- `CrossEntropyLoss` 内部已经帮你做了 `log_softmax`
+- 再结合负对数似然去算 loss
+
+所以：
+- 不要先手动 `softmax`
+- 直接把原始 `logits` 传进去
+
+### 12.12.6 PyTorch 里的输入输出形状
+常见多分类任务里：
+
+#### `logits` 的 shape
+\[
+(N, C)
+\]
+
+例如：
+1. `N = 128`：一个 batch 里 128 个样本
+2. `C = 10`：10 个类别（MNIST 的 0~9）
+
+#### `target` 的 shape
+\[
+(N,)
+\]
+
+里面放的是类别编号，例如：
+
+```python
+[3, 0, 4, 1, ...]
+```
+
+注意：
+- 这里不是 one-hot
+- 而是直接给类别下标
+
+### 12.12.7 一句话总结
+\[
+L = -\log\left(\frac{e^{z_y}}{\sum_j e^{z_j}}\right)
+\]
+
+也就是：
+1. logits 先变成概率
+2. 只取真实类别那一项概率
+3. 再取负对数
+
+所以：
+- 真实类别概率高 -> loss 小
+- 真实类别概率低 -> loss 大
+
+### 12.12.8 代码里这句到底怎么算
+```python
+loss = loss_fn(logits, yb)
+```
+
+如果前面定义的是：
+```python
+loss_fn = nn.CrossEntropyLoss()
+```
+
+那这句做的本质是：
+1. 对 `logits` 做 softmax，得到每个类别的概率
+2. 对每个样本，只取真实类别 `yb` 对应的那一项概率
+3. 做 `-log(真实类别概率)`
+4. 对整个 batch 的样本再取平均
+
+#### 输入长什么样
+`logits` 常见 shape 是：
+```python
+(N, C)
+```
+表示：
+1. `N` 个样本
+2. `C` 个类别
+
+`yb` 常见 shape 是：
+```python
+(N,)
+```
+表示每个样本的真实类别编号。
+
+例如：
+```python
+logits = [
+    [2.0, 1.0, 0.1],
+    [0.2, 0.5, 1.8]
+]
+yb = [0, 2]
+```
+
+这表示：
+1. 第 1 个样本真实类别是 `0`
+2. 第 2 个样本真实类别是 `2`
+
+#### 第 1 个样本怎么计算
+第 1 个样本的 logits 是：
+\[
+[2.0,\ 1.0,\ 0.1]
+\]
+
+先做 softmax，得到大致概率：
+\[
+[0.659,\ 0.242,\ 0.099]
+\]
+
+真实类别是 `0`，所以只取第 `0` 类概率：
+\[
+p_y = 0.659
+\]
+
+然后做负对数：
+\[
+L_1 = -\log(0.659) \approx 0.417
+\]
+
+#### 第 2 个样本怎么计算
+第 2 个样本的 logits 是：
+\[
+[0.2,\ 0.5,\ 1.8]
+\]
+
+softmax 后大致概率：
+\[
+[0.137,\ 0.185,\ 0.678]
+\]
+
+真实类别是 `2`，所以只取第 `2` 类概率：
+\[
+p_y = 0.678
+\]
+
+然后做负对数：
+\[
+L_2 = -\log(0.678) \approx 0.389
+\]
+
+#### batch 里最后怎么合并
+默认 `CrossEntropyLoss()` 相当于：
+```python
+nn.CrossEntropyLoss(reduction="mean")
+```
+
+所以最后会对 batch 里的样本 loss 取平均：
+\[
+loss = \frac{L_1 + L_2}{2}
+\]
+
+也就是：
+\[
+loss = \frac{0.417 + 0.389}{2} \approx 0.403
+\]
+
+所以代码里这句：
+```python
+loss = loss_fn(logits, yb)
+```
+你可以把它直接翻译成：
+- 自动做 softmax
+- 自动挑真实类别那一项
+- 自动取负对数
+- 自动对 batch 求平均
+
 ---
 
 ## 12.13 训练循环（Day6 版）
@@ -2472,17 +3703,238 @@ correct += (pred_label == yb).sum().item()
 acc = 100.0 * correct / total
 ```
 
-解释：
-1. `argmax(dim=1)`：每个样本取分数最大的类别下标。
-2. `(pred_label == yb)`：逐个比较对错。
-3. `.sum().item()`：统计这一批答对几个。
-4. `100.0 * correct / total`：转成百分比准确率。
+这三行是在做三件事：
+1. 从 `logits` 里取出每个样本预测的类别
+2. 统计这一批里答对了多少个
+3. 用累计正确数和总样本数计算准确率
 
-小例子：
-1. `pred=[1,0,2,0]`
-2. `label=[1,2,2,0]`
-3. 对错是 `[T,F,T,T]`，正确 3/4
-4. `acc = 75.0`
+### 12.14.1 第一句：`pred_label = logits.argmax(dim=1)`
+
+先看 `logits` 是什么。  
+在分类任务里，`logits` 常见 shape 是：
+
+\[
+(batch\_size,\ num\_classes)
+\]
+
+例如：
+```python
+logits = [
+    [1.2, 0.5, 3.1, -0.2],
+    [2.0, 1.0, 0.3, 0.1],
+    [0.2, 2.5, 1.7, 0.4]
+]
+```
+
+意思是：
+1. 每一行 = 一个样本
+2. 每一列 = 一个类别分数
+
+`argmax` 的意思是：
+- 找最大值所在的下标
+
+`dim=1` 的意思是：
+- 沿着第 `1` 维找最大值下标
+- 在这种二维张量里，就是“按行找”
+
+为什么是 `dim=1`：
+1. `dim=0` 会沿着样本维看，不是我们想要的
+2. `dim=1` 才表示：对每个样本，在类别这一行里找最大分数
+
+所以：
+```python
+pred_label = logits.argmax(dim=1)
+```
+的结果是：
+- 每个样本预测成哪个类别
+
+对于上面的例子：
+```python
+pred_label = [2, 0, 1]
+```
+
+因为：
+1. 第1行最大值 `3.1` 在下标 `2`
+2. 第2行最大值 `2.0` 在下标 `0`
+3. 第3行最大值 `2.5` 在下标 `1`
+
+### 12.14.2 第二句前半段：`(pred_label == yb)`
+
+假设真实标签是：
+```python
+yb = [2, 3, 1]
+```
+
+而预测标签是：
+```python
+pred_label = [2, 0, 1]
+```
+
+那么：
+```python
+pred_label == yb
+```
+就是逐个比较：
+1. `2 == 2` -> `True`
+2. `0 == 3` -> `False`
+3. `1 == 1` -> `True`
+
+结果得到一个布尔张量：
+```python
+[True, False, True]
+```
+
+意思是：
+- 这一批 3 个样本里，第 1 个和第 3 个答对了
+
+### 12.14.3 第二句后半段：`.sum().item()`
+
+#### `.sum()` 是什么
+`.sum()` 表示：
+- 把张量里的元素加总
+
+对于布尔张量，PyTorch 会把：
+1. `True` 当成 `1`
+2. `False` 当成 `0`
+
+所以：
+```python
+[True, False, True].sum()
+```
+就等于：
+```python
+1 + 0 + 1 = 2
+```
+
+也就是：
+- 这一批答对了 `2` 个样本
+
+`.sum()` 之后得到的通常还是 tensor，例如：
+```python
+tensor(2)
+```
+
+#### `.item()` 是什么
+`.item()` 的作用是：
+- 把“只含一个元素的 tensor”取成普通 Python 数字
+
+所以：
+```python
+tensor(2).item()
+```
+会变成：
+```python
+2
+```
+
+这样就方便写：
+```python
+correct += 2
+```
+
+### 12.14.4 整个 `(pred_label == yb).sum().item()` 连起来是什么意思
+
+这一整句的中文翻译是：
+1. 先比较这一批每个样本是否预测正确
+2. 得到一串 `True/False`
+3. 再把 `True` 当 `1`、`False` 当 `0` 求和
+4. 得到“这一批一共答对了几个”
+5. 再把结果从 tensor 取成普通整数
+
+所以：
+```python
+correct += (pred_label == yb).sum().item()
+```
+的意思是：
+- 把“当前这一批答对的个数”累计加到 `correct` 上
+
+### 12.14.5 第三句：`acc = 100.0 * correct / total`
+
+这里是在算准确率百分比。
+
+假设：
+```python
+correct = 12
+total = 15
+```
+
+那么：
+```python
+acc = 100.0 * 12 / 15 = 80.0
+```
+
+意思就是：
+- 当前准确率是 `80%`
+
+这里写 `100.0` 而不是 `100`，只是为了明确得到浮点数结果。
+
+### 12.14.6 一个完整小例子
+
+假设当前 batch：
+```python
+logits = [
+    [1.2, 0.5, 3.1],
+    [2.0, 1.0, 0.3],
+    [0.2, 2.5, 1.7]
+]
+yb = [2, 1, 1]
+```
+
+第一步：
+```python
+pred_label = logits.argmax(dim=1)
+```
+得到：
+```python
+[2, 0, 1]
+```
+
+第二步：
+```python
+pred_label == yb
+```
+得到：
+```python
+[True, False, True]
+```
+
+第三步：
+```python
+(pred_label == yb).sum()
+```
+得到：
+```python
+tensor(2)
+```
+
+第四步：
+```python
+(pred_label == yb).sum().item()
+```
+得到：
+```python
+2
+```
+
+说明这一批答对了 `2` 个。
+
+如果之前：
+```python
+correct = 8
+total = 10
+```
+
+而这一批有 `3` 个样本，那么更新后：
+```python
+correct += 2   # 变成 10
+total += 3     # 变成 13
+acc = 100.0 * correct / total
+```
+
+结果：
+```python
+acc = 100.0 * 10 / 13 ≈ 76.92
+```
 
 ---
 
